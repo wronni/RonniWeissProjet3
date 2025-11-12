@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Abandoned Asylum - Interactive Horror</title>
+    <meta name="description" content="A terrifying interactive horror experience. Can you escape the asylum?">
+    <meta property="og:title" content="The Abandoned Asylum">
+    <meta property="og:description" content="A terrifying interactive horror experience">
+    <meta property="og:type" content="website">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(to bottom, #0a0a0a, #1a1a2e);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(200, 200, 200, 0.3);
+            animation: float 8s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(100vh) translateX(50px); opacity: 0; }
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(20, 20, 30, 0.95);
+            border: 2px solid #3a3a4a;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(139, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: rgba(139, 0, 0, 0.8);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: rgba(139, 0, 0, 1);
+            transform: scale(1.1);
+        }
+
+        h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 2.5em;
+            color: #8b0000;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            animation: flicker 4s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+            75% { opacity: 0.95; }
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        .breadcrumbs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+
+        .breadcrumb {
+            color: #8b0000;
+            opacity: 0.7;
+        }
+
+        .story-text {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: #d0d0d0;
+            text-align: justify;
+            animation: typewriter 0.5s;
+        }
+
+        @keyframes typewriter {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #2a0000, #1a0000);
+            color: #fff;
+            border: 2px solid #6a0000;
+            padding: 20px 25px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-family: 'Georgia', serif;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .choice-btn.keyboard-focus {
+            outline: 3px solid #ff0000;
+            outline-offset: 2px;
+        }
+
+        .choice-icon {
+            font-size: 2em;
+            min-width: 40px;
+            text-align: center;
+            filter: drop-shadow(0 0 8px rgba(139, 0, 0, 0.6));
+            animation: iconFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .choice-text {
+            flex: 1;
+        }
+
+        .choice-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #ff0000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .choice-btn:hover::before {
+            opacity: 1;
+            animation: bloodDrip 1s;
+        }
+
+        @keyframes bloodDrip {
+            0% { height: 0%; }
+            100% { height: 100%; }
+        }
+
+        .choice-btn:hover {
+            background: linear-gradient(to right, #4a0000, #6a0000);
+            border-color: #8b0000;
+            transform: translateX(10px) scale(1.02);
+            box-shadow: 0 0 20px rgba(139, 0, 0, 0.7);
+        }
+
+        .restart-btn, .back-btn {
+            background: linear-gradient(to right, #1a1a2e, #2a2a4e);
+            color: #fff;
+            border: 2px solid #4a4a6e;
+            padding: 15px 30px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-family: 'Georgia', serif;
+        }
+
+        .restart-btn:hover, .back-btn:hover {
+            background: linear-gradient(to right, #2a2a4e, #3a3a6e);
+            border-color: #6a6a8e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 74, 110, 0.5);
+        }
+
+        .ending {
+            background: rgba(139, 0, 0, 0.2);
+            border-left: 4px solid #8b0000;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .ending-title {
+            font-family: 'Nosifer', cursive;
+            font-size: 1.5em;
+            color: #ff4444;
+            margin-bottom: 10px;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-out;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .tutorial-content {
+            background: rgba(20, 20, 30, 0.95);
+            padding: 40px;
+            border-radius: 10px;
+            max-width: 500px;
+            text-align: center;
+            border: 2px solid #8b0000;
+        }
+
+        .tutorial-content h2 {
+            color: #ff4444;
+            margin-bottom: 20px;
+            font-family: 'Creepster', cursive;
+        }
+
+        .tutorial-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .story-text {
+                font-size: 1.1em;
+            }
+
+            .choice-btn {
+                font-size: 1em;
+                padding: 15px 20px;
+            }
+
+            .controls {
+                top: 10px;
+                right: 10px;
+            }
+        }
+
+        .screen-shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+
+    <div class="controls">
+        <button class="control-btn" id="soundToggle" title="Toggle Sound">🔊</button>
+        <button class="control-btn" id="saveBtn" title="Save Progress">💾</button>
+        <button class="control-btn" id="helpBtn" title="Help">❓</button>
+    </div>
+
+    <div class="container" id="gameContainer">
+        <h1>The Abandoned Asylum</h1>
+        <p class="subtitle">A Horror Interactive Experience</p>
+        <div id="breadcrumbs" class="breadcrumbs"></div>
+        <div id="story-content" class="fade-in"></div>
+        <button class="back-btn" id="backBtn" style="display:none;">← Go Back</button>
+    </div>
+
+    <audio id="ambientSound" loop>
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTUIGGa45euXSwgMT6nk77RgGgU7k9nxy3Uq" type="audio/wav">
+    </audio>
+    <audio id="hoverSound" src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAA=" preload="auto"></audio>
+    <audio id="clickSound" src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAB=" preload="auto"></audio>
+
+    <script>
+        const story = {
+            start: {
+                text: "The rusted gates of Blackwood Asylum creak open as you push through. The building looms before you, its broken windows like empty eye sockets staring into your soul. You've come here searching for answers about your sister's disappearance three months ago. The police gave up, but you won't.\n\nAs you step inside the decaying entrance hall, the smell of mold and decay fills your nostrils. To your left, a dark staircase leads upward. To your right, a door marked 'BASEMENT' hangs ajar. Straight ahead, the main corridor stretches into darkness.\n\nWhat do you do?",
+                choices: [
+                    { text: "Go upstairs to the patient rooms", next: "upstairs", icon: "🪜" },
+                    { text: "Investigate the basement", next: "basement", icon: "🔦" },
+                    { text: "Walk down the main corridor", next: "corridor", icon: "🚶" }
+                ]
+            },
+            upstairs: {
+                text: "The wooden stairs groan under your weight as you climb. Each step echoes through the empty building. At the top, you find yourself in a long hallway lined with patient rooms. Most doors are locked or rusted shut.\n\nOne door is slightly open, and you hear something—a soft scratching sound coming from inside. Your flashlight flickers.\n\nWhat do you do?",
+                choices: [
+                    { text: "Enter the room with the scratching sound", next: "scratchingRoom", icon: "🚪" },
+                    { text: "Try other doors in the hallway", next: "otherDoors", icon: "🔍" },
+                    { text: "Go back downstairs", next: "start", icon: "🔙" }
+                ]
+            },
+            basement: {
+                text: "You descend into darkness, your flashlight barely cutting through the thick gloom. The air grows colder with each step. At the bottom, you find yourself in what appears to be an old morgue. Metal tables are still set up, and filing cabinets line the walls.\n\nYou notice fresh footprints in the dust leading to a heavy door at the far end. Your sister's necklace lies on one of the tables.\n\nWhat do you do?",
+                choices: [
+                    { text: "Follow the footprints through the heavy door", next: "followFootprints", icon: "🚪" },
+                    { text: "Search the filing cabinets for records", next: "searchFiles", icon: "📁" },
+                    { text: "Take the necklace and leave immediately", next: "leaveWithNecklace", icon: "💎" }
+                ]
+            },
+            corridor: {
+                text: "You walk slowly down the main corridor, your footsteps echoing. Debris litters the floor—broken glass, old medical equipment, scattered papers. The walls are covered in peeling paint and strange scratches.\n\nYou reach what appears to be the main office. Through the grimy window, you see file folders scattered across a desk. Suddenly, you hear footsteps behind you.\n\nWhat do you do?",
+                choices: [
+                    { text: "Hide in the office quickly", next: "hideOffice", icon: "🫣" },
+                    { text: "Turn around and confront whoever is there", next: "confront", icon: "👤" },
+                    { text: "Run back to the entrance", next: "runAway", icon: "🏃" }
+                ]
+            },
+            scratchingRoom: {
+                text: "You push the door open slowly. The scratching stops. Inside, you see words carved into the walls: 'HELP ME' repeated hundreds of times. In the corner, huddled and shaking, is a figure.\n\nAs your light falls on them, they turn. It's your sister—but something is wrong. Her eyes are vacant, and she doesn't seem to recognize you. She whispers, 'They're still here. They never left.'\n\nWhat do you do?",
+                choices: [
+                    { text: "Try to help her up and escape together", next: "escapeWithSister", icon: "🤝" },
+                    { text: "Ask her what happened", next: "askSister", icon: "💬" },
+                    { text: "Call for help on your phone", next: "callHelp", icon: "📱" }
+                ]
+            },
+            otherDoors: {
+                text: "You try several doors, but most are locked tight. Finally, one opens into what looks like a doctor's office. Inside, you find a journal on the desk. As you flip through it, you discover horrifying experiments were conducted here—mind control, psychological torture.\n\nThe last entry mentions 'subjects that remained' and a 'permanent staff.' The date is from last week.\n\nSuddenly, all the doors in the hallway slam shut simultaneously.",
+                choices: [
+                    { text: "Try to break out through the window", next: "breakWindow", icon: "🪟" },
+                    { text: "Hide and wait", next: "hideAndWait", icon: "🤫" },
+                    { text: "Search the office for another exit", next: "searchOffice", icon: "🔍" }
+                ]
+            },
+            followFootprints: {
+                text: "You push through the heavy door and find yourself in a tunnel. The footprints continue ahead, but you also hear voices chanting somewhere in the distance. The tunnel splits in two directions—one toward the voices, one away from them.\n\nThe voices sound almost hypnotic, calling you forward.",
+                choices: [
+                    { text: "Follow the voices", next: "followVoices", icon: "👂" },
+                    { text: "Take the other tunnel path", next: "otherTunnel", icon: "➡️" },
+                    { text: "Go back to the morgue", next: "basement", icon: "🔙" }
+                ]
+            },
+            searchFiles: {
+                text: "You pull open the filing cabinets and find patient records dating back decades. Then you see it—your sister's name on a recent file. According to the notes, she's been classified as a 'permanent resident' and is being kept in 'Ward C for observation.'\n\nYou hear footsteps coming down the basement stairs.\n\nWhat do you do?",
+                choices: [
+                    { text: "Hide behind the cabinets", next: "hideBasement", icon: "🫣" },
+                    { text: "Take the file and run through the heavy door", next: "runWithFile", icon: "🏃" },
+                    { text: "Confront whoever is coming", next: "confrontBasement", icon: "👤" }
+                ]
+            },
+            leaveWithNecklace: {
+                text: "You grab the necklace and sprint back up the stairs. Your heart pounds as you race toward the exit. But when you reach the entrance hall, the front door is now locked. The windows are barred from the outside.\n\nYou hear laughter echoing through the building. A voice calls out: 'You can't save her. You can't even save yourself.'\n\nYou're trapped.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "TRAPPED FOREVER"
+            },
+            hideOffice: {
+                text: "You duck into the office and crouch behind the desk. Through the door crack, you see a figure in a stained white coat walk past. They're humming something unsettling.\n\nAfter they pass, you notice the file on the desk is labeled 'PROJECT RESURRECT - ACTIVE SUBJECTS.' Your sister's photo is paper-clipped to the first page.",
+                choices: [
+                    { text: "Take the file and sneak out", next: "takeFile", icon: "📁" },
+                    { text: "Follow the figure in the white coat", next: "followFigure", icon: "🚶" },
+                    { text: "Stay hidden and read the entire file", next: "readFile", icon: "📖" }
+                ]
+            },
+            confront: {
+                text: "You spin around, shining your flashlight directly at the source of the footsteps. A man in a tattered white coat stands there, his face gaunt and pale. He holds up his hands.\n\n'Please,' he whispers. 'You shouldn't be here. They'll make you stay. Like they made me stay. Like they made all of us stay.'\n\nHe points down the corridor. 'Ward C. That's where they keep the new ones. But once you go there, you can't leave.'",
+                choices: [
+                    { text: "Ask him to help you find your sister", next: "askForHelp", icon: "🤝" },
+                    { text: "Go to Ward C alone", next: "wardC", icon: "🚪" },
+                    { text: "Try to convince him to escape together", next: "escapeDoctor", icon: "🏃" }
+                ]
+            },
+            runAway: {
+                text: "Panic takes over and you sprint back toward the entrance. But the building seems different now—hallways stretch longer, doors lead to places they shouldn't. You're running in circles.\n\nFinally, exhausted, you collapse in what looks like a patient room. As your vision fades, you see figures in white coats approaching. One of them is smiling.\n\n'Another permanent resident,' they say. 'How wonderful.'",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "LOST IN THE MAZE"
+            },
+            escapeWithSister: {
+                text: "You grab your sister's hand and pull her up. She's weak but follows you. Together, you navigate back through the asylum. Every shadow seems to move, every sound echoes with menace.\n\nAs you reach the entrance, your sister suddenly stops. 'I can't leave,' she whispers. 'If I leave, they'll come for you too. They're inside my head now.'\n\nYou can see the exit. Freedom is just steps away.",
+                choices: [
+                    { text: "Drag her out anyway", next: "forcedEscape", icon: "💪" },
+                    { text: "Stay with her and figure out how to help", next: "stayAndHelp", icon: "❤️" },
+                    { text: "Promise to get help and come back", next: "promiseReturn", icon: "🤝" }
+                ]
+            },
+            askSister: {
+                text: "You kneel beside her and ask what happened. She speaks in broken sentences, describing experiments, procedures, voices that never stop. 'They wanted to see if they could keep consciousness alive forever. Trap it here. We're all trapped here now.'\n\nShe grabs your arm with surprising strength. 'Don't let them do it to you. Run. Run now!'\n\nBut it's too late. You hear them coming—footsteps from every direction.",
+                choices: [
+                    { text: "Fight your way out", next: "fightOut", icon: "✊" },
+                    { text: "Barricade the room", next: "barricade", icon: "🚪" },
+                    { text: "Jump out the window", next: "jumpWindow", icon: "🪟" }
+                ]
+            },
+            callHelp: {
+                text: "You pull out your phone but there's no signal. Your sister laughs—a hollow, broken sound. 'There's never a signal. They made sure of that. No one can call out. No one can leave.'\n\nYour phone's screen flickers and displays a message you didn't type: 'WELCOME TO THE FAMILY.'\n\nThe door behind you slams shut.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "NO ESCAPE"
+            },
+            breakWindow: {
+                text: "You grab a chair and smash it through the window. Glass shatters everywhere. You climb through, cutting yourself on the jagged edges, but you're free. You're outside.\n\nYou run through the overgrown grounds toward the gate. Behind you, you can hear screaming—dozens of voices calling your name. But you don't look back. You climb the gate and drop to the other side.\n\nYou've escaped, but your sister is still in there. And you know they won't stop until they bring you back.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "ESCAPED - BUT AT WHAT COST?"
+            },
+            forcedEscape: {
+                text: "You pull your sister through the exit with all your strength. As you cross the threshold, she screams—a sound of pure agony. But you don't stop. You drag her to your car and drive away.\n\nMiles down the road, she finally calms down. 'You saved me,' she sobs. 'They had their hooks in my mind, but you broke their hold.'\n\nYou take her to the hospital. The doctors find evidence of experimental drugs in her system, but she'll recover. You've both escaped. Together.\n\nBut sometimes, in your dreams, you still hear the asylum calling you back.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "TRIUMPHANT ESCAPE - TOGETHER"
+            },
+            fightOut: {
+                text: "You and your sister fight together. She's weak, but determined. You overpower the first few staff members who enter, then run together through the building.\n\nThe asylum seems to fight back—doors closing, lights going out, hallways changing. But you persist. Finally, you see the exit. You both sprint toward freedom.\n\nYou burst through the doors into daylight. You're both injured, exhausted, but alive. As you drive away, you watch the asylum in your rearview mirror. For just a moment, you swear you see it move, like a living thing.\n\nYou've both escaped, but you know the asylum will never stop looking for you.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "FOUGHT YOUR WAY TO FREEDOM"
+            }
+        };
+
+        let currentScene = 'start';
+        let history = [];
+        let soundEnabled = true;
+        let selectedChoice = 0;
+
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (8 + Math.random() * 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Save/Load functions
+        function saveProgress() {
+            localStorage.setItem('asylumProgress', JSON.stringify({
+                scene: currentScene,
+                history: history
+            }));
+            alert('Progress saved!');
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('asylumProgress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                currentScene = data.scene;
+                history = data.history || [];
+                displayScene(currentScene);
+            }
+        }
+
+        function displayScene(sceneKey) {
+            const scene = story[sceneKey];
+            if (!scene) return;
+
+            const contentDiv = document.getElementById('story-content');
+            const container = document.getElementById('gameContainer');
+
+            // Shake effect for scary moments
+            if (Math.random() > 0.7 && !scene.ending) {
+                container.classList.add('screen-shake');
+                setTimeout(() => container.classList.remove('screen-shake'), 500);
+            }
+
+            contentDiv.classList.remove('fade-in');
+            contentDiv.classList.add('fade-out');
+
+            setTimeout(() => {
+                let html = `<p class="story-text">${scene.text.replace(/\n\n/g, '</p><p class="story-text">')}</p>`;
+
+                if (scene.ending) {
+                    html += `<div class="ending">
+                        <div class="ending-title">${scene.endingTitle}</div>
+                    </div>`;
+                    html += '<button class="restart-btn" onclick="restartStory()">↺ Start Over</button>';
+                } else {
+                    html += '<div class="choices" id="choicesContainer">';
+                    scene.choices.forEach((choice, index) => {
+                        const icon = choice.icon || '→';
+                        html += `<button class="choice-btn" data-index="${index}" onclick="makeChoice('${choice.next}')">
+                            <span class="choice-icon">${icon}</span>
+                            <span class="choice-text">${choice.text}</span>
+                        </button>`;
+                    });
+                    html += '</div>';
+                }
+
+                contentDiv.innerHTML = html;
+                contentDiv.classList.remove('fade-out');
+                contentDiv.classList.add('fade-in');
+
+                updateBreadcrumbs();
+                document.getElementById('backBtn').style.display = history.length > 0 ? 'block' : 'none';
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Add hover sounds
+                document.querySelectorAll('.choice-btn').forEach(btn => {
+                    btn.addEventListener('mouseenter', playHoverSound);
+                });
+            }, 300);
+        }
+
+        function makeChoice(nextScene) {
+            playClickSound();
+            history.push(currentScene);
+            currentScene = nextScene;
+            displayScene(nextScene);
+
+            // Vibrate on mobile
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        function goBack() {
+            if (history.length > 0) {
+                currentScene = history.pop();
+                displayScene(currentScene);
+            }
+        }
+
+        function restartStory() {
+            currentScene = 'start';
+            history = [];
+            displayScene('start');
+        }
+
+        function updateBreadcrumbs() {
+            const breadcrumbsDiv = document.getElementById('breadcrumbs');
+            const path = [...history, currentScene].slice(-5);
+            breadcrumbsDiv.innerHTML = path.map(s => `<span class="breadcrumb">🩸 ${s}</span>`).join(' ');
+        }
+
+        function playHoverSound() {
+            if (soundEnabled) {
+                const sound = document.getElementById('hoverSound');
+                sound.currentTime = 0;
+                sound.volume = 0.3;
+                sound.play().catch(e => {});
+            }
+        }
+
+        function playClickSound() {
+            if (soundEnabled) {
+                const sound = document.getElementById('clickSound');
+                sound.currentTime = 0;
+                sound.volume = 0.4;
+                sound.play().catch(e => {});
+            }
+        }
+
+        // Controls
+        document.getElementById('soundToggle').addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+            const ambient = document.getElementById('ambientSound');
+            if (soundEnabled) {
+                ambient.play().catch(e => {});
+            } else {
+                ambient.pause();
+            }
+        });
+
+        document.getElementById('saveBtn').addEventListener('click', saveProgress);
+        document.getElementById('backBtn').addEventListener('click', goBack);
+
+        document.getElementById('helpBtn').addEventListener('click', () => {
+            const overlay = document.createElement('div');
+            overlay.className = 'tutorial-overlay';
+            overlay.innerHTML = `
+                <div class="tutorial-content">
+                    <h2>How to Play</h2>
+                    <p><strong>🖱️ Mouse:</strong> Click choices to progress</p>
+                    <p><strong>⌨️ Keyboard:</strong> Use Arrow Keys + Enter</p>
+                    <p><strong>🔙 Back Button:</strong> Undo your last choice</p>
+                    <p><strong>💾 Save:</strong> Your progress is saved automatically</p>
+                    <p><strong>🔊 Sound:</strong> Toggle ambient sounds</p>
+                    <button class="restart-btn" onclick="this.parentElement.parentElement.remove()">Got it!</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const choices = document.querySelectorAll('.choice-btn');
+            if (choices.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                choices[selectedChoice]?.classList.remove('keyboard-focus');
+                selectedChoice = (selectedChoice + 1) % choices.length;
+                choices[selectedChoice]?.classList.add('keyboard-focus');
+                choices[selectedChoice]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                choices[selectedChoice]?.classList.remove('keyboard-focus');
+                selectedChoice = selectedChoice === 0 ? choices.length - 1 : selectedChoice - 1;
+                choices[selectedChoice]?.classList.add('keyboard-focus');
+                choices[selectedChoice]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (e.key === 'Enter' && choices[selectedChoice]) {
+                e.preventDefault();
+                choices[selectedChoice].click();
+            } else if (e.key === 'Escape') {
+                goBack();
+            }
+        });
+
+        // Check for saved progress
+        if (localStorage.getItem('asylumProgress')) {
+            if (confirm('Continue from where you left off?')) {
+                loadProgress();
+            } else {
+                displayScene('start');
+            }
+        } else {
+            // Show tutorial for first-time visitors
+            if (!localStorage.getItem('asylumVisited')) {
+                localStorage.setItem('asylumVisited', 'true');
+                document.getElementById('helpBtn').click();
+            }
+            displayScene('start');
+        }
+
+        createParticles();
+
+        // Auto-save every 30 seconds
+        setInterval(() => {
+            if (currentScene !== 'start') {
+                localStorage.setItem('asylumProgress', JSON.stringify({
+                    scene: currentScene,
+                    history: history
+                }));
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

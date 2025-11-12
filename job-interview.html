@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Interview</title>
+    <title>The Interview - Interactive Experience</title>
+    <meta name="description" content="Navigate a job interview with different response styles. Will you be hired?">
+    <meta property="og:title" content="The Interview - Interactive Simulation">
+    <meta property="og:description" content="Test your interview skills in this interactive experience">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,13 +16,67 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatParticle 4s infinite;
+        }
+
+        @keyframes floatParticle {
+            0%, 100% { opacity: 0; transform: translateY(0); }
+            50% { opacity: 0.8; transform: translateY(-50px); }
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
         }
 
         .container {
@@ -28,6 +86,8 @@
             border-radius: 15px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             overflow: hidden;
+            position: relative;
+            z-index: 10;
         }
 
         .header {
@@ -35,18 +95,34 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.2"/><circle cx="80" cy="60" r="3" fill="white" opacity="0.1"/></svg>');
+            opacity: 0.5;
         }
 
         h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
             font-weight: 600;
+            position: relative;
+            z-index: 1;
         }
 
         .company-name {
             font-size: 1.3em;
             opacity: 0.9;
             font-weight: 300;
+            position: relative;
+            z-index: 1;
         }
 
         .content {
@@ -54,11 +130,38 @@
             color: #333;
         }
 
+        .response-tracker {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .tracker-item {
+            text-align: center;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .tracker-professional { background: #e3f2fd; color: #1976d2; }
+        .tracker-creative { background: #f3e5f5; color: #7b1fa2; }
+        .tracker-honest { background: #e8f5e9; color: #388e3c; }
+
         .interviewer-section {
             display: flex;
             align-items: flex-start;
             margin-bottom: 30px;
             gap: 20px;
+            animation: slideIn 0.5s;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .interviewer-avatar {
@@ -86,6 +189,19 @@
             padding: 20px;
             border-radius: 12px;
             border-left: 4px solid #667eea;
+            position: relative;
+        }
+
+        .interviewer-speech::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 20px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid #f8f9fa;
         }
 
         .interviewer-name {
@@ -129,6 +245,11 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .choice-btn.keyboard-focus {
+            outline: 3px solid #667eea;
+            outline-offset: 3px;
         }
 
         .choice-btn::before {
@@ -231,6 +352,7 @@
             background: #f8f9fa;
             border-radius: 12px;
             border-left: 4px solid #667eea;
+            animation: slideIn 0.5s;
         }
 
         .outcome-title {
@@ -252,6 +374,12 @@
             padding: 25px;
             border-radius: 10px;
             text-align: center;
+            animation: scaleIn 0.5s;
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .result-hired {
@@ -272,6 +400,12 @@
         .result-icon {
             font-size: 3em;
             margin-bottom: 15px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .result-title {
@@ -286,7 +420,7 @@
             line-height: 1.6;
         }
 
-        .restart-btn {
+        .restart-btn, .back-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -299,7 +433,7 @@
             font-weight: 600;
         }
 
-        .restart-btn:hover {
+        .restart-btn:hover, .back-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
@@ -326,6 +460,45 @@
             font-weight: 500;
         }
 
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .tutorial-content {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            text-align: center;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tutorial-content h2 {
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .tutorial-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
         @media (max-width: 768px) {
             .content {
                 padding: 25px;
@@ -347,22 +520,24 @@
         .fade-in {
             animation: fadeIn 0.6s ease-in;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
     </style>
 </head>
 <body>
+    <div class="particles" id="particles"></div>
+
+    <div class="controls">
+        <button class="control-btn" id="soundToggle" title="Toggle Sound">🔊</button>
+        <button class="control-btn" id="saveBtn" title="Save Progress">💾</button>
+        <button class="control-btn" id="helpBtn" title="Help">❓</button>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>The Interview</h1>
             <div class="company-name">TechVision Solutions</div>
         </div>
-        <div class="content" id="interview-content">
-            <!-- Content will be inserted here -->
-        </div>
+        <div class="content" id="interview-content"></div>
+        <button class="back-btn" id="backBtn" style="display:none; margin: 0 40px 20px;">← Go Back</button>
     </div>
 
     <script>
@@ -375,7 +550,6 @@
                 button: 'Begin Interview',
                 next: 'question1'
             },
-
             question1: {
                 type: 'question',
                 questionNumber: 1,
@@ -407,7 +581,6 @@
                     }
                 ]
             },
-
             q1_professional: {
                 type: 'feedback',
                 interviewer: 'Sarah Chen',
@@ -415,7 +588,6 @@
                 feedback: 'That\'s a very structured approach. I appreciate how you involved stakeholders and created a clear framework for decision-making. It shows leadership and strategic thinking.',
                 next: 'question2'
             },
-
             q1_creative: {
                 type: 'feedback',
                 interviewer: 'Sarah Chen',
@@ -423,7 +595,6 @@
                 feedback: 'I love that! Rather than just making a choice, you found a way to get the information you needed. That kind of resourcefulness and innovative thinking is exactly what we need on this team.',
                 next: 'question2'
             },
-
             q1_honest: {
                 type: 'feedback',
                 interviewer: 'Sarah Chen',
@@ -431,7 +602,6 @@
                 feedback: 'Thank you for that candor. A lot of candidates try to make everything sound perfect. The reality is that tough decisions are tough, and acknowledging that shows self-awareness. I respect that you trusted your instincts.',
                 next: 'question2'
             },
-
             question2: {
                 type: 'question',
                 questionNumber: 2,
@@ -463,7 +633,6 @@
                     }
                 ]
             },
-
             q2_professional: {
                 type: 'feedback',
                 interviewer: 'Sarah Chen',
@@ -471,7 +640,6 @@
                 feedback: 'That\'s a clear and ambitious path. We do have opportunities for growth into senior leadership here, and we value people who think strategically about their development. Your goals align well with our team\'s trajectory.',
                 next: 'question3'
             },
-
             q2_creative: {
                 type: 'feedback',
                 interviewer: 'Sarah Chen',
@@ -479,7 +647,6 @@
                 feedback: 'I really appreciate that perspective. Some of our best people are the ones who stay curious and follow their interests rather than just climbing a ladder. We need people who aren\'t afraid to pivot and explore new directions.',
                 next: 'question3'
             },
-
             q2_honest: {
                 type: 'feedback',
                 interviewer: 'Sarah Chen',
@@ -487,7 +654,6 @@
                 feedback: 'You know, I think a lot of people feel that way but are afraid to say it. The pressure to have everything mapped out can be intense. What I\'m hearing is that you value growth and impact over a specific title, which actually tells me a lot about what motivates you.',
                 next: 'question3'
             },
-
             question3: {
                 type: 'question',
                 questionNumber: 3,
@@ -519,7 +685,6 @@
                     }
                 ]
             },
-
             outcome_professional: {
                 type: 'outcome',
                 result: 'hired',
@@ -528,7 +693,6 @@
                 description: 'Your professional, polished approach throughout the interview impressed Sarah. Your structured thinking, clear career trajectory, and research into the company demonstrated that you\'re serious and prepared. TechVision offers you the position with a competitive salary and a clear path to senior leadership.',
                 details: 'Your professional demeanor and strategic answers showed you\'re ready to hit the ground running. You\'ll start in two weeks leading the enterprise analytics product line.'
             },
-
             outcome_creative: {
                 type: 'outcome',
                 result: 'unexpected',
@@ -537,7 +701,6 @@
                 description: 'Sarah was impressed by your creative thinking and willingness to challenge conventional approaches. While the original Product Manager role has been filled, she introduces you to the Innovation Lab team. They\'re looking for someone to lead experimental product initiatives with more autonomy and risk-taking.',
                 details: 'It\'s a smaller team with less structure but more freedom. The role is technically a lateral move, but you\'d be building something new from scratch. Sarah thinks your style would be perfect for it. The choice is yours.'
             },
-
             outcome_honest: {
                 type: 'outcome',
                 result: 'hired',
@@ -549,14 +712,50 @@
         };
 
         let currentScene = 'intro';
+        let history = [];
         let scores = { professional: 0, creative: 0, honest: 0 };
+        let soundEnabled = true;
+        let selectedChoice = 0;
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 4 + 's';
+                particle.style.animationDuration = (3 + Math.random() * 2) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function saveProgress() {
+            localStorage.setItem('interviewProgress', JSON.stringify({
+                scene: currentScene,
+                history: history,
+                scores: scores
+            }));
+            alert('💼 Progress saved!');
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('interviewProgress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                currentScene = data.scene;
+                history = data.history || [];
+                scores = data.scores || { professional: 0, creative: 0, honest: 0 };
+                displayScene(currentScene);
+            }
+        }
 
         function displayScene(sceneKey) {
             const scene = interviewData[sceneKey];
             const contentDiv = document.getElementById('interview-content');
-            
+
             contentDiv.classList.remove('fade-in');
-            
+
             setTimeout(() => {
                 let html = '';
 
@@ -576,6 +775,11 @@
                 } else if (scene.type === 'question') {
                     const progress = (scene.questionNumber / scene.totalQuestions) * 100;
                     html = `
+                        <div class="response-tracker">
+                            <div class="tracker-item tracker-professional">💼 Professional: ${scores.professional}</div>
+                            <div class="tracker-item tracker-creative">💡 Creative: ${scores.creative}</div>
+                            <div class="tracker-item tracker-honest">💬 Honest: ${scores.honest}</div>
+                        </div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${progress}%"></div>
                         </div>
@@ -591,17 +795,17 @@
                             <div class="response-label">How do you respond?</div>
                             <div class="choices">
                     `;
-                    
-                    scene.choices.forEach(choice => {
+
+                    scene.choices.forEach((choice, index) => {
                         const icons = {
                             professional: '💼',
                             creative: '💡',
                             honest: '💬'
                         };
                         const icon = icons[choice.type] || '💭';
-                        
+
                         html += `
-                            <div class="choice-btn ${choice.type}-choice" onclick="selectAnswer('${choice.next}', ${JSON.stringify(choice.score).replace(/"/g, '&quot;')})">
+                            <div class="choice-btn ${choice.type}-choice" data-index="${index}" onclick="selectAnswer('${choice.next}', ${JSON.stringify(choice.score).replace(/"/g, '&quot;')})">
                                 <div class="choice-header">
                                     <div class="choice-icon ${choice.type}">${icon}</div>
                                     <div class="choice-type ${choice.type}">${choice.label} Response</div>
@@ -610,7 +814,7 @@
                             </div>
                         `;
                     });
-                    
+
                     html += `
                             </div>
                         </div>
@@ -642,25 +846,32 @@
                         <div class="outcome-section">
                             <div class="outcome-text">${scene.details}</div>
                         </div>
+                        <div class="response-tracker">
+                            <div class="tracker-item tracker-professional">💼 Professional: ${scores.professional}</div>
+                            <div class="tracker-item tracker-creative">💡 Creative: ${scores.creative}</div>
+                            <div class="tracker-item tracker-honest">💬 Honest: ${scores.honest}</div>
+                        </div>
                         <div style="text-align: center;">
                             <button class="restart-btn" onclick="restartInterview()">↺ Try Different Responses</button>
                         </div>
                     `;
                 }
-                
+
                 contentDiv.innerHTML = html;
                 contentDiv.classList.add('fade-in');
+                document.getElementById('backBtn').style.display = history.length > 0 && !scene.type === 'outcome' ? 'block' : 'none';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 100);
         }
 
         function makeChoice(nextScene) {
+            history.push(currentScene);
             currentScene = nextScene;
             displayScene(nextScene);
+            if (navigator.vibrate) navigator.vibrate(30);
         }
 
         function selectAnswer(nextScene, scoreObj) {
-            // Update scores
             for (let key in scoreObj) {
                 scores[key] += scoreObj[key];
             }
@@ -669,12 +880,93 @@
 
         function restartInterview() {
             currentScene = 'intro';
+            history = [];
             scores = { professional: 0, creative: 0, honest: 0 };
             displayScene('intro');
         }
 
-        // Initialize
-        displayScene('intro');
+        function goBack() {
+            if (history.length > 0) {
+                currentScene = history.pop();
+                displayScene(currentScene);
+            }
+        }
+
+        document.getElementById('soundToggle').addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+        });
+
+        document.getElementById('saveBtn').addEventListener('click', saveProgress);
+        document.getElementById('backBtn').addEventListener('click', goBack);
+
+        document.getElementById('helpBtn').addEventListener('click', () => {
+            const overlay = document.createElement('div');
+            overlay.className = 'tutorial-overlay';
+            overlay.innerHTML = `
+                <div class="tutorial-content">
+                    <h2>💼 Interview Guide</h2>
+                    <p><strong>💼 Professional:</strong> Structured, strategic responses</p>
+                    <p><strong>💡 Creative:</strong> Innovative, outside-the-box thinking</p>
+                    <p><strong>💬 Honest:</strong> Authentic, vulnerable answers</p>
+                    <p><strong>⌨️ Keyboard:</strong> Arrow keys + Enter to navigate</p>
+                    <p><strong>🔙 Back:</strong> Rethink your last answer</p>
+                    <button class="restart-btn" onclick="this.parentElement.parentElement.remove()">Start Interview</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const choices = document.querySelectorAll('.choice-btn');
+            if (choices.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                choices[selectedChoice]?.classList.remove('keyboard-focus');
+                selectedChoice = (selectedChoice + 1) % choices.length;
+                choices[selectedChoice]?.classList.add('keyboard-focus');
+                choices[selectedChoice]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                choices[selectedChoice]?.classList.remove('keyboard-focus');
+                selectedChoice = selectedChoice === 0 ? choices.length - 1 : selectedChoice - 1;
+                choices[selectedChoice]?.classList.add('keyboard-focus');
+                choices[selectedChoice]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (e.key === 'Enter' && choices[selectedChoice]) {
+                e.preventDefault();
+                choices[selectedChoice].click();
+            } else if (e.key === 'Escape') {
+                goBack();
+            }
+        });
+
+        if (localStorage.getItem('interviewProgress')) {
+            if (confirm('Continue your interview?')) {
+                loadProgress();
+            } else {
+                displayScene('intro');
+            }
+        } else {
+            if (!localStorage.getItem('interviewVisited')) {
+                localStorage.setItem('interviewVisited', 'true');
+                document.getElementById('helpBtn').click();
+            }
+            displayScene('intro');
+        }
+
+        createParticles();
+
+        setInterval(() => {
+            if (currentScene !== 'intro') {
+                localStorage.setItem('interviewProgress', JSON.stringify({
+                    scene: currentScene,
+                    history: history,
+                    scores: scores
+                }));
+            }
+        }, 30000);
     </script>
 </body>
 </html>
