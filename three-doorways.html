@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hallway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .scene-text {
+            font-size: 1.3em;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: 300;
+        }
+
+        .doors-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .door {
+            height: 450px;
+            border-radius: 20px 20px 5px 5px;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .door::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0.3;
+            transition: opacity 0.4s ease;
+            z-index: 1;
+        }
+
+        .door:hover::before {
+            opacity: 0.1;
+        }
+
+        .door:hover {
+            transform: scale(1.08) translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .door-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 30px;
+        }
+
+        .door-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .door-title {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .door-description {
+            font-size: 1em;
+            opacity: 0.95;
+            font-weight: 300;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+            line-height: 1.4;
+        }
+
+        .door-handle {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 80px;
+            background: linear-gradient(180deg, #ffd700, #ffed4e, #ffd700);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            z-index: 3;
+            transition: transform 0.3s ease;
+        }
+
+        .door:hover .door-handle {
+            transform: translateY(-50%) rotate(-15deg);
+        }
+
+        .door-handle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 15px;
+            height: 15px;
+            background: #cc9900;
+            border-radius: 50%;
+        }
+
+        .forest-door {
+            background: 
+                linear-gradient(rgba(34, 139, 34, 0.7), rgba(85, 107, 47, 0.7)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect fill="%23228B22" width="400" height="400"/><circle cx="100" cy="100" r="40" fill="%234d7c3b" opacity="0.6"/><circle cx="300" cy="150" r="50" fill="%234d7c3b" opacity="0.5"/><circle cx="200" cy="250" r="45" fill="%234d7c3b" opacity="0.6"/><circle cx="350" cy="300" r="35" fill="%234d7c3b" opacity="0.5"/><circle cx="50" cy="350" r="30" fill="%234d7c3b" opacity="0.6"/></svg>');
+            background-size: cover;
+        }
+
+        .city-door {
+            background: 
+                linear-gradient(rgba(138, 43, 226, 0.6), rgba(75, 0, 130, 0.6)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect fill="%23191970" width="400" height="400"/><rect x="50" y="200" width="40" height="200" fill="%23FF00FF" opacity="0.3"/><rect x="120" y="150" width="50" height="250" fill="%2300BFFF" opacity="0.3"/><rect x="200" y="180" width="45" height="220" fill="%23FF00FF" opacity="0.3"/><rect x="270" y="120" width="55" height="280" fill="%2300BFFF" opacity="0.3"/><rect x="350" y="160" width="40" height="240" fill="%23FF00FF" opacity="0.3"/><circle cx="70" cy="180" r="3" fill="%23FFFF00"/><circle cx="145" cy="130" r="3" fill="%23FFFF00"/><circle cx="222" cy="160" r="3" fill="%23FFFF00"/><circle cx="297" cy="100" r="3" fill="%23FFFF00"/></svg>');
+            background-size: cover;
+        }
+
+        .ocean-door {
+            background: 
+                linear-gradient(rgba(0, 105, 148, 0.7), rgba(72, 209, 204, 0.7)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect fill="%23006994" width="400" height="400"/><ellipse cx="80" cy="120" rx="30" ry="20" fill="%2348D1CC" opacity="0.3"/><ellipse cx="200" cy="100" rx="40" ry="25" fill="%2348D1CC" opacity="0.3"/><ellipse cx="320" cy="140" rx="35" ry="22" fill="%2348D1CC" opacity="0.3"/><ellipse cx="150" cy="220" rx="45" ry="28" fill="%2348D1CC" opacity="0.3"/><ellipse cx="280" cy="250" rx="38" ry="24" fill="%2348D1CC" opacity="0.3"/><ellipse cx="100" cy="320" rx="42" ry="26" fill="%2348D1CC" opacity="0.3"/><path d="M50,350 Q75,340 100,350 T150,350" stroke="%2348D1CC" fill="none" opacity="0.4" stroke-width="2"/><path d="M200,360 Q225,350 250,360 T300,360" stroke="%2348D1CC" fill="none" opacity="0.4" stroke-width="2"/></svg>');
+            background-size: cover;
+        }
+
+        .choices-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 18px 25px;
+            font-size: 1.15em;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-weight: 300;
+        }
+
+        .choice-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateX(10px);
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 35px;
+            font-size: 1.1em;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: all 0.3s ease;
+            font-weight: 300;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .world-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .world-title {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        .world-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 25px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .doors-container {
+                grid-template-columns: 1fr;
+            }
+
+            .door-icon {
+                font-size: 3em;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .discovery {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 8px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="scene-content" class="fade-in">
+            <!-- Content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const scenes = {
+            hallway: {
+                type: 'doors',
+                title: 'The Hallway',
+                subtitle: 'Three doors. Three worlds. Which will you choose?',
+                text: 'You find yourself standing in an endless hallway. The walls shimmer with an otherworldly light, and three ornate doors stand before you. Each door radiates a different energy, calling to you in its own unique way.',
+                doors: [
+                    {
+                        id: 'forest',
+                        icon: '🌲',
+                        title: 'The Forest Door',
+                        description: 'Carved from ancient oak, this door emanates the scent of pine and earth',
+                        next: 'forestEntrance'
+                    },
+                    {
+                        id: 'city',
+                        icon: '🌆',
+                        title: 'The City Door',
+                        description: 'Made of gleaming chrome and neon, pulsing with electric energy',
+                        next: 'cityEntrance'
+                    },
+                    {
+                        id: 'ocean',
+                        icon: '🌊',
+                        title: 'The Ocean Door',
+                        description: 'Formed from coral and seaglass, you can hear waves crashing beyond it',
+                        next: 'oceanEntrance'
+                    }
+                ]
+            },
+
+            // FOREST WORLD
+            forestEntrance: {
+                type: 'world',
+                world: 'forest',
+                icon: '🌲',
+                title: 'The Enchanted Forest',
+                text: 'You step through the door into a pristine forest. Sunlight filters through the canopy above, creating dancing patterns on the moss-covered ground. The air is fresh and alive with the sounds of birds and rustling leaves. Ancient trees tower around you, their trunks wider than cars.\n\nA path winds deeper into the woods, while you also notice a small clearing to your right with strange mushrooms growing in a perfect circle.',
+                choices: [
+                    { text: '→ Follow the winding path deeper into the forest', next: 'forestPath' },
+                    { text: '→ Investigate the mushroom circle', next: 'mushroomCircle' },
+                    { text: '→ Climb one of the massive trees', next: 'climbTree' },
+                    { text: '← Return to the hallway', next: 'hallway' }
+                ]
+            },
+
+            forestPath: {
+                type: 'world',
+                world: 'forest',
+                icon: '🌲',
+                title: 'The Forest Path',
+                text: 'You follow the path as it winds between the trees. After a while, you come upon a crystal-clear stream. A family of deer drinks from it peacefully. One of them, a magnificent stag with impressive antlers, looks directly at you without fear.',
+                discovery: 'You feel a deep connection to this place. The forest accepts you as one of its own.',
+                choices: [
+                    { text: '→ Sit by the stream and rest', next: 'streamRest' },
+                    { text: '→ Follow the deer when they leave', next: 'followDeer' },
+                    { text: '→ Wade into the stream', next: 'wadeStream' },
+                    { text: '← Go back to the entrance', next: 'forestEntrance' }
+                ]
+            },
+
+            mushroomCircle: {
+                type: 'world',
+                world: 'forest',
+                icon: '🌲',
+                title: 'The Fairy Circle',
+                text: 'You approach the mushroom circle carefully. As you get closer, you notice the mushrooms are glowing faintly. In the center of the circle, there\'s a small, ornate box made of twisted branches.',
+                discovery: 'Legend says these are fairy circles - magical places where the veil between worlds is thin.',
+                choices: [
+                    { text: '→ Step into the circle', next: 'insideCircle' },
+                    { text: '→ Reach for the box without entering', next: 'grabBox' },
+                    { text: '→ Leave it undisturbed and explore elsewhere', next: 'forestEntrance' }
+                ]
+            },
+
+            climbTree: {
+                type: 'world',
+                world: 'forest',
+                icon: '🌲',
+                title: 'Among the Branches',
+                text: 'You climb one of the massive trees, finding handholds in its ancient bark. Higher and higher you go, until you emerge above the canopy. The view is breathtaking - an endless sea of green stretching in all directions. In the distance, you can see a waterfall cascading down a cliff, and what looks like ruins of an ancient temple.',
+                discovery: 'From up here, you realize this forest is much larger and more mysterious than you imagined.',
+                choices: [
+                    { text: '→ Climb down and head toward the waterfall', next: 'waterfall' },
+                    { text: '→ Climb down and search for the ruins', next: 'ruins' },
+                    { text: '→ Stay up here a while longer', next: 'treeTop' },
+                    { text: '← Climb down and return to entrance', next: 'forestEntrance' }
+                ]
+            },
+
+            streamRest: {
+                type: 'world',
+                world: 'forest',
+                icon: '🌲',
+                title: 'Peace by the Stream',
+                text: 'You sit by the stream, listening to the gentle flow of water. Time seems to slow down. You feel more relaxed than you have in years. A butterfly lands on your hand, its wings shimmering with impossible colors.',
+                discovery: 'In this place, you remember what it feels like to simply exist, without worry or hurry.',
+                choices: [
+                    { text: '→ Stay here forever', next: 'forestEnding' },
+                    { text: '← Return to the hallway', next: 'hallway' }
+                ]
+            },
+
+            followDeer: {
+                type: 'world',
+                world: 'forest',
+                icon: '🌲',
+                title: 'Following Nature',
+                text: 'You follow the deer as they move through the forest. They lead you to a hidden grove where flowers of every color bloom year-round. In the center is a pool of water that reflects not the sky above, but stars - even though it\'s daytime.',
+                discovery: 'You\'ve found a place of pure magic, untouched by time.',
+                choices: [
+                    { text: '→ Drink from the pool', next: 'magicPool' },
+                    { text: '→ Pick some flowers', next: 'pickFlowers' },
+                    { text: '← Return to the hallway', next: 'hallway' }
+                ]
+            },
+
+            wadeStream: {
+                type: 'world',
+                world: 'forest',
+                icon: '🌲',
+                title: 'In the Stream',
+                text: 'You wade into the stream. The water is cool and refreshing. As you walk upstream, you discover the water has healing properties - you feel energized and renewed.',
+                discovery: 'This stream flows from somewhere magical.',
+                choices: [
+                    { text: '→ Follow the stream to its source', next: 'streamSource' },
+                    { text: '← Return to shore', next: 'forestPath' }
+                ]
+            },
+
+            insideCircle: {
+                type: 'world',
+                world: 'forest',
+                icon: '🌲',
+                title: 'Within the Circle',
+                text: 'You step inside the mushroom circle. Immediately, the world shifts. The forest becomes even more vibrant, more alive. You can hear voices in the wind, see shapes moving between the trees. A tiny figure appears before you - a forest sprite, no bigger than your hand.',
+                discovery: '"Welcome, traveler," the sprite says in a voice like tinkling bells. "You have entered our realm."',
+                choices: [
+                    { text: '→ Ask the sprite questions', next: 'spriteChat' },
+                    { text: '→ Thank them and leave the circle', next: 'forestEntrance' }
+                ]
+            },
+
+            grabBox: {
+                type: 'world',
+                world: 'forest',
+                icon: '🌲',
+                title: 'The Branch Box',
+                text: 'You carefully reach for the box without stepping into the circle. When you open it, you find a small acorn that glows with golden light.',
+                discovery: 'A gift from the forest - it fills you with warmth and hope.',
+                choices: [
+                    { text: '→ Keep the acorn', next: 'forestEnding' },
+                    { text: '← Return to the hallway', next: 'hallway' }
+                ]
+            },
+
+            waterfall: {
+                type: 'world',
+                world: 'forest',
+                icon: '🌲',
+                title: 'The Waterfall',
+                text: 'You reach the waterfall after a long walk. The cascading water creates rainbows in the mist. Behind the waterfall, you discover a hidden cave.',
+                discovery: 'This cave feels ancient, like a sacred place.',
+                choices: [
+                    { text: '→ Enter the cave', next: 'secretCave' },
+                    { text: '← Return to the entrance', next: 'forestEntrance' }
+                ]
+            },
+
+            forestEnding: {
+                type: 'ending',
+                world: 'forest',
+                icon: '🌲',
+                title: 'One with the Forest',
+                text: 'You decide to stay. Time passes differently here. Days feel like moments, moments feel like lifetimes. You become part of the forest, and it becomes part of you. This is where you belong.',
+                discovery: 'You have found your true home.',
+                showBack: true
+            },
+
+            // CITY WORLD  
+            cityEntrance: {
+                type: 'world',
+                world: 'city',
+                icon: '🌆',
+                title: 'Neo-Tokyo',
+                text: 'You step through the door into a dazzling futuristic metropolis. Neon lights in every color illuminate towering skyscrapers that seem to touch the stars. Flying vehicles zip through the air above you. Holographic advertisements flicker and pulse. The energy is electric, overwhelming, intoxicating.\n\nA sleek subway station entrance beckons to your left, while a busy night market sprawls to your right.',
+                choices: [
+                    { text: '→ Take the subway deeper into the city', next: 'subway' },
+                    { text: '→ Explore the night market', next: 'nightMarket' },
+                    { text: '→ Enter one of the towering buildings', next: 'skyscraper' },
+                    { text: '← Return to the hallway', next: 'hallway' }
+                ]
+            },
+
+            subway: {
+                type: 'world',
+                world: 'city',
+                icon: '🌆',
+                title: 'The Subway',
+                text: 'You descend into the subway station. It\'s ultramodern, with screens showing destinations you\'ve never heard of. A train arrives silently, its doors opening with a soft hiss. Inside, a few passengers sit absorbed in glowing devices.',
+                discovery: 'This subway goes to places beyond imagination.',
+                choices: [
+                    { text: '→ Board the train to Downtown Core', next: 'downtown' },
+                    { text: '→ Board the train to The Heights', next: 'heights' },
+                    { text: '→ Board the train to Underground City', next: 'underground' },
+                    { text: '← Go back to street level', next: 'cityEntrance' }
+                ]
+            },
+
+            nightMarket: {
+                type: 'world',
+                world: 'city',
+                icon: '🌆',
+                title: 'The Night Market',
+                text: 'The market is alive with activity. Vendors sell impossible things - bottled starlight, memories in jars, dreams recorded on crystals. The smell of exotic foods fills the air. A street musician plays an instrument you\'ve never seen before.',
+                discovery: 'This market deals in more than just goods - it trades in experiences and possibilities.',
+                choices: [
+                    { text: '→ Buy bottled starlight', next: 'buyStarlight' },
+                    { text: '→ Talk to the musician', next: 'musician' },
+                    { text: '→ Try the street food', next: 'streetFood' },
+                    { text: '← Leave the market', next: 'cityEntrance' }
+                ]
+            },
+
+            skyscraper: {
+                type: 'world',
+                world: 'city',
+                icon: '🌆',
+                title: 'The Observation Deck',
+                text: 'You enter a gleaming skyscraper and take the elevator to the top. The observation deck offers a 360-degree view of the city. From here, you can see the full scope of this cyber-metropolis. It\'s beautiful and terrifying in equal measure.',
+                discovery: 'The city sprawls infinitely in all directions, constantly growing, always alive.',
+                choices: [
+                    { text: '→ Use the telescope to look closer', next: 'telescope' },
+                    { text: '→ Talk to another visitor', next: 'visitor' },
+                    { text: '← Take the elevator down', next: 'cityEntrance' }
+                ]
+            },
+
+            downtown: {
+                type: 'world',
+                world: 'city',
+                icon: '🌆',
+                title: 'Downtown Core',
+                text: 'The train brings you to the heart of the city. Massive screens display news, ads, and art. People rush by, absorbed in their own worlds. A robot offers you a map.',
+                discovery: 'This is the pulse of the city - where everything converges.',
+                choices: [
+                    { text: '→ Take the robot\'s map', next: 'robotGuide' },
+                    { text: '→ Wander randomly', next: 'wanderCity' },
+                    { text: '← Return to hallway', next: 'hallway' }
+                ]
+            },
+
+            heights: {
+                type: 'world',
+                world: 'city',
+                icon: '🌆',
+                title: 'The Heights',
+                text: 'The train carries you up, up, up. You emerge in the wealthy district high above the city. Here, buildings float in the air, connected by light bridges. The view is incredible.',
+                discovery: 'The elite live above it all, literally and figuratively.',
+                choices: [
+                    { text: '→ Walk across a light bridge', next: 'lightBridge' },
+                    { text: '→ Enter a floating mansion', next: 'mansion' },
+                    { text: '← Return to hallway', next: 'hallway' }
+                ]
+            },
+
+            underground: {
+                type: 'world',
+                world: 'city',
+                icon: '🌆',
+                title: 'Underground City',
+                text: 'The train descends deep beneath the surface. You emerge in an entire city that exists underground - older, grittier, more authentic than the gleaming surface.',
+                discovery: 'This is where the real city lives - in the shadows beneath the neon.',
+                choices: [
+                    { text: '→ Explore the underground markets', next: 'underMarket' },
+                    { text: '→ Find a hidden bar', next: 'hiddenBar' },
+                    { text: '← Return to hallway', next: 'hallway' }
+                ]
+            },
+
+            buyStarlight: {
+                type: 'world',
+                world: 'city',
+                icon: '🌆',
+                title: 'Bottled Starlight',
+                text: 'You buy a bottle of starlight. When you open it, light pours out and surrounds you. Suddenly, you can see the threads connecting everything in the city - every person, every building, every moment.',
+                discovery: 'For a brief moment, you understand how everything fits together.',
+                choices: [
+                    { text: '→ Hold onto this feeling', next: 'cityEnding' },
+                    { text: '← Return to hallway', next: 'hallway' }
+                ]
+            },
+
+            musician: {
+                type: 'world',
+                world: 'city',
+                icon: '🌆',
+                title: 'The Street Musician',
+                text: 'You approach the musician. Up close, you see they\'re not quite human - more like a being made of sound and light. "I play the future," they say. "Would you like to hear your tomorrow?"',
+                discovery: 'Music has power here - it can show you what\'s to come.',
+                choices: [
+                    { text: '→ Listen to your future', next: 'hearFuture' },
+                    { text: '→ Politely decline', next: 'nightMarket' }
+                ]
+            },
+
+            cityEnding: {
+                type: 'ending',
+                world: 'city',
+                icon: '🌆',
+                title: 'Become the City',
+                text: 'You decide to stay in the city. You plug in, connect, become part of the digital neural network that runs through everything. You are the city now, and the city is you. Infinite information, infinite possibility.',
+                discovery: 'You are no longer limited by physical form. You are everywhere and nowhere.',
+                showBack: true
+            },
+
+            // OCEAN WORLD
+            oceanEntrance: {
+                type: 'world',
+                world: 'ocean',
+                icon: '🌊',
+                title: 'The Endless Ocean',
+                text: 'You step through the door onto a pristine beach. Crystal-clear turquoise water stretches to the horizon. The sun is warm on your skin. Somehow, you can breathe underwater here - you just know it instinctively.\n\nA coral reef is visible in the shallows, while in the distance, you can see an island.',
+                choices: [
+                    { text: '→ Dive into the coral reef', next: 'coralReef' },
+                    { text: '→ Swim to the distant island', next: 'island' },
+                    { text: '→ Walk along the beach', next: 'beachWalk' },
+                    { text: '← Return to the hallway', next: 'hallway' }
+                ]
+            },
+
+            coralReef: {
+                type: 'world',
+                world: 'ocean',
+                icon: '🌊',
+                title: 'The Coral Reef',
+                text: 'You dive beneath the waves. As promised, you can breathe underwater as easily as air. The coral reef is a riot of colors - fish of every hue dart around you. A sea turtle swims by, unbothered by your presence.',
+                discovery: 'Down here, you feel weightless, free, reborn.',
+                choices: [
+                    { text: '→ Swim deeper', next: 'deepOcean' },
+                    { text: '→ Follow the sea turtle', next: 'followTurtle' },
+                    { text: '→ Explore a underwater cave', next: 'underwaterCave' },
+                    { text: '← Return to the beach', next: 'oceanEntrance' }
+                ]
+            },
+
+            island: {
+                type: 'world',
+                world: 'ocean',
+                icon: '🌊',
+                title: 'The Mysterious Island',
+                text: 'You swim to the island. As you approach, you realize it\'s not a natural island - it\'s actually a giant sleeping creature, its back covered in sand and palm trees.',
+                discovery: 'This creature has been sleeping for centuries. Should you wake it?',
+                choices: [
+                    { text: '→ Gently wake the creature', next: 'wakeCreature' },
+                    { text: '→ Explore the island-back carefully', next: 'exploreCreature' },
+                    { text: '← Swim back to the beach', next: 'oceanEntrance' }
+                ]
+            },
+
+            beachWalk: {
+                type: 'world',
+                world: 'ocean',
+                icon: '🌊',
+                title: 'Beach Walk',
+                text: 'You walk along the endless beach. The sand is warm and soft. You find shells, sea glass, and other treasures washed up by the tide. Each one seems to hold a memory.',
+                discovery: 'The ocean gives up its secrets slowly, one shell at a time.',
+                choices: [
+                    { text: '→ Collect the shells', next: 'collectShells' },
+                    { text: '→ Build a sandcastle', next: 'sandcastle' },
+                    { text: '← Return to entrance', next: 'oceanEntrance' }
+                ]
+            },
+
+            deepOcean: {
+                type: 'world',
+                world: 'ocean',
+                icon: '🌊',
+                title: 'The Deep',
+                text: 'You swim deeper and deeper. The light grows dim, but bioluminescent creatures light your way. You discover an underwater city - ancient ruins of a civilization long gone.',
+                discovery: 'An entire world once existed here, beneath the waves.',
+                choices: [
+                    { text: '→ Explore the ruins', next: 'exploreRuins' },
+                    { text: '→ Find the palace', next: 'palace' },
+                    { text: '← Return to hallway', next: 'hallway' }
+                ]
+            },
+
+            followTurtle: {
+                type: 'world',
+                world: 'ocean',
+                icon: '🌊',
+                title: 'Following the Turtle',
+                text: 'You follow the sea turtle through the water. It leads you to a gathering of marine life - whales, dolphins, and creatures you don\'t recognize. They seem to be communicating.',
+                discovery: 'The ocean has its own language, and you\'re beginning to understand it.',
+                choices: [
+                    { text: '→ Try to join their conversation', next: 'marineTalk' },
+                    { text: '← Return to the beach', next: 'oceanEntrance' }
+                ]
+            },
+
+            underwaterCave: {
+                type: 'world',
+                world: 'ocean',
+                icon: '🌊',
+                title: 'The Underwater Cave',
+                text: 'You swim into a dark cave. Inside, you find an air pocket - a secret grotto. Pearls line the walls, glowing softly. In the center is a pool that shows reflections of other worlds.',
+                discovery: 'This cave is a nexus point - a place where worlds connect.',
+                choices: [
+                    { text: '→ Look into the pool', next: 'visionPool' },
+                    { text: '→ Take a glowing pearl', next: 'takePearl' },
+                    { text: '← Leave the cave', next: 'coralReef' }
+                ]
+            },
+
+            wakeCreature: {
+                type: 'world',
+                world: 'ocean',
+                icon: '🌊',
+                title: 'The Ancient One',
+                text: 'You gently touch the creature. Its massive eye opens. "Thank you for waking me," it rumbles in a voice like distant thunder. "I am the Guardian of the Ocean. Ask, and I shall grant you one gift."',
+                discovery: 'You stand before an ancient being of immense power.',
+                choices: [
+                    { text: '→ Ask for wisdom', next: 'oceanWisdom' },
+                    { text: '→ Ask to stay here forever', next: 'oceanEnding' },
+                    { text: '→ Ask for nothing and just talk', next: 'talkGuardian' }
+                ]
+            },
+
+            collectShells: {
+                type: 'world',
+                world: 'ocean',
+                icon: '🌊',
+                title: 'Shell Collector',
+                text: 'You collect shells, each one unique. As you hold them, you receive flashes of the memories they contain - moments of joy, love, and peace from people who once walked this beach.',
+                discovery: 'These shells are more than objects - they\'re vessels of human experience.',
+                choices: [
+                    { text: '→ Keep the shells', next: 'oceanEnding' },
+                    { text: '← Return them to the sea', next: 'oceanEntrance' }
+                ]
+            },
+
+            oceanEnding: {
+                type: 'ending',
+                world: 'ocean',
+                icon: '🌊',
+                title: 'Part of the Ocean',
+                text: 'You become part of the ocean. Your body dissolves into water, but your consciousness remains. You are the waves, the tides, the depths. You flow everywhere, touching all shores, connecting all lands. You are infinite.',
+                discovery: 'You are no longer a single being, but part of the eternal dance of water.',
+                showBack: true
+            }
+        };
+
+        let currentScene = 'hallway';
+
+        function displayScene(sceneKey) {
+            const scene = scenes[sceneKey];
+            const contentDiv = document.getElementById('scene-content');
+            
+            contentDiv.classList.remove('fade-in');
+            
+            setTimeout(() => {
+                let html = '';
+
+                if (scene.type === 'doors') {
+                    // Initial hallway with three doors
+                    html = `
+                        <h1>${scene.title}</h1>
+                        <p class="subtitle">${scene.subtitle}</p>
+                        <p class="scene-text">${scene.text}</p>
+                        <div class="doors-container">
+                    `;
+                    
+                    scene.doors.forEach(door => {
+                        html += `
+                            <div class="door ${door.id}-door" onclick="enterDoor('${door.next}')">
+                                <div class="door-content">
+                                    <span class="door-icon">${door.icon}</span>
+                                    <div class="door-title">${door.title}</div>
+                                    <div class="door-description">${door.description}</div>
+                                </div>
+                                <div class="door-handle"></div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div>';
+                } else if (scene.type === 'world' || scene.type === 'ending') {
+                    // World exploration scenes
+                    html = `
+                        <div class="world-header">
+                            <span class="world-icon">${scene.icon}</span>
+                            <h2 class="world-title">${scene.title}</h2>
+                        </div>
+                        <p class="scene-text">${scene.text.replace(/\n\n/g, '</p><p class="scene-text">')}</p>
+                    `;
+                    
+                    if (scene.discovery) {
+                        html += `<div class="discovery">${scene.discovery}</div>`;
+                    }
+                    
+                    if (scene.type === 'world') {
+                        html += '<div class="choices-list">';
+                        scene.choices.forEach(choice => {
+                            html += `<button class="choice-btn" onclick="makeChoice('${choice.next}')">${choice.text}</button>`;
+                        });
+                        html += '</div>';
+                    } else if (scene.showBack) {
+                        html += '<button class="back-btn" onclick="makeChoice(\'hallway\')">← Return to the Hallway</button>';
+                    }
+                }
+                
+                contentDiv.innerHTML = html;
+                contentDiv.classList.add('fade-in');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+        }
+
+        function enterDoor(sceneKey) {
+            currentScene = sceneKey;
+            displayScene(sceneKey);
+        }
+
+        function makeChoice(nextScene) {
+            currentScene = nextScene;
+            displayScene(nextScene);
+        }
+
+        // Initialize
+        displayScene('hallway');
+    </script>
+</body>
+</html>

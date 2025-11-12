@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Interview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 850px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .company-name {
+            font-size: 1.3em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 40px;
+            color: #333;
+        }
+
+        .interviewer-section {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .interviewer-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            animation: subtlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .interviewer-speech {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .interviewer-name {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .question-text {
+            font-size: 1.15em;
+            line-height: 1.7;
+            color: #444;
+        }
+
+        .response-section {
+            margin-top: 30px;
+        }
+
+        .response-label {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: white;
+            border: 3px solid #e0e0e0;
+            padding: 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .choice-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 6px;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .choice-btn.professional-choice::before {
+            background: linear-gradient(180deg, #1976d2, #0d47a1);
+        }
+
+        .choice-btn.creative-choice::before {
+            background: linear-gradient(180deg, #7b1fa2, #4a148c);
+        }
+
+        .choice-btn.honest-choice::before {
+            background: linear-gradient(180deg, #388e3c, #1b5e20);
+        }
+
+        .choice-btn:hover::before {
+            transform: scaleY(1);
+        }
+
+        .choice-btn:hover {
+            border-color: #667eea;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.25);
+            transform: translateX(8px) translateY(-2px);
+        }
+
+        .choice-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .choice-icon {
+            font-size: 2em;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .professional .choice-icon {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        }
+
+        .creative .choice-icon {
+            background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+        }
+
+        .honest .choice-icon {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        }
+
+        .choice-type {
+            font-size: 0.85em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .professional {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .creative {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .honest {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .choice-text {
+            font-size: 1.05em;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .outcome-section {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .outcome-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .outcome-text {
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .result-card {
+            margin-top: 25px;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .result-hired {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .result-rejected {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            color: white;
+        }
+
+        .result-unexpected {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .result-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-description {
+            font-size: 1.1em;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #e0e0e0;
+            margin-bottom: 30px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+        }
+
+        .question-number {
+            text-align: center;
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .interviewer-section {
+                flex-direction: column;
+            }
+
+            .choice-btn {
+                padding: 15px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>The Interview</h1>
+            <div class="company-name">TechVision Solutions</div>
+        </div>
+        <div class="content" id="interview-content">
+            <!-- Content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const interviewData = {
+            intro: {
+                type: 'intro',
+                interviewer: 'Sarah Chen',
+                avatar: '👩‍💼',
+                text: 'Welcome! Thank you for coming in today. I\'m Sarah Chen, the hiring manager for the Product Manager position. Before we begin, I want you to know that we value authenticity here at TechVision. There are no "wrong" answers - we just want to understand who you are and how you think.\n\nShall we get started?',
+                button: 'Begin Interview',
+                next: 'question1'
+            },
+
+            question1: {
+                type: 'question',
+                questionNumber: 1,
+                totalQuestions: 3,
+                interviewer: 'Sarah Chen',
+                avatar: '👩‍💼',
+                question: 'Tell me about a time when you had to make a difficult decision with limited information. How did you approach it?',
+                choices: [
+                    {
+                        type: 'professional',
+                        label: 'Professional',
+                        text: 'At my previous company, we had to decide whether to launch a feature with known minor bugs or delay the release. I organized a risk assessment meeting with engineering and stakeholders, created a decision matrix weighing user impact against market timing, and we decided to launch with a rapid patch plan. The feature succeeded and we fixed the bugs within the first week.',
+                        next: 'q1_professional',
+                        score: { professional: 1 }
+                    },
+                    {
+                        type: 'creative',
+                        label: 'Creative',
+                        text: 'I once had to choose between two completely different product directions with incomplete data. Instead of just picking one, I ran a rapid prototyping sprint where we built lightweight versions of both and tested them with a small user group over a weekend. The data we gathered made the decision obvious, and it only cost us three days.',
+                        next: 'q1_creative',
+                        score: { creative: 1 }
+                    },
+                    {
+                        type: 'honest',
+                        label: 'Honest',
+                        text: 'Honestly? I agonized over it. I had to decide whether to pivot our product strategy, but the data was inconclusive. I talked to mentors, made pro/con lists, and lost sleep over it. Eventually, I went with my gut based on what I\'d learned about our users. It worked out, but I won\'t pretend I was confident at the time.',
+                        next: 'q1_honest',
+                        score: { honest: 1 }
+                    }
+                ]
+            },
+
+            q1_professional: {
+                type: 'feedback',
+                interviewer: 'Sarah Chen',
+                avatar: '👩‍💼',
+                feedback: 'That\'s a very structured approach. I appreciate how you involved stakeholders and created a clear framework for decision-making. It shows leadership and strategic thinking.',
+                next: 'question2'
+            },
+
+            q1_creative: {
+                type: 'feedback',
+                interviewer: 'Sarah Chen',
+                avatar: '👩‍💼',
+                feedback: 'I love that! Rather than just making a choice, you found a way to get the information you needed. That kind of resourcefulness and innovative thinking is exactly what we need on this team.',
+                next: 'question2'
+            },
+
+            q1_honest: {
+                type: 'feedback',
+                interviewer: 'Sarah Chen',
+                avatar: '👩‍💼',
+                feedback: 'Thank you for that candor. A lot of candidates try to make everything sound perfect. The reality is that tough decisions are tough, and acknowledging that shows self-awareness. I respect that you trusted your instincts.',
+                next: 'question2'
+            },
+
+            question2: {
+                type: 'question',
+                questionNumber: 2,
+                totalQuestions: 3,
+                interviewer: 'Sarah Chen',
+                avatar: '👩‍💼',
+                question: 'Where do you see yourself in five years? What are your career aspirations?',
+                choices: [
+                    {
+                        type: 'professional',
+                        label: 'Professional',
+                        text: 'In five years, I see myself as a Senior Product Manager or Director of Product, leading a team and driving strategy for a major product line. I want to develop my leadership skills, deepen my technical knowledge, and mentor junior PMs. I\'m particularly interested in scaling products from growth phase to maturity.',
+                        next: 'q2_professional',
+                        score: { professional: 1 }
+                    },
+                    {
+                        type: 'creative',
+                        label: 'Creative',
+                        text: 'Honestly, I try not to plan too rigidly. Five years ago, I never would have predicted where I am now. I want to keep learning, take on challenges that scare me a little, and work on products that matter. Maybe I\'ll be leading a team, maybe I\'ll be a specialist in AI products, or maybe I\'ll have started something of my own. I follow opportunities, not just titles.',
+                        next: 'q2_creative',
+                        score: { creative: 1 }
+                    },
+                    {
+                        type: 'honest',
+                        label: 'Honest',
+                        text: 'That\'s a tough question because I\'m honestly still figuring it out. I know I love product work and want to keep growing in this field. I think about leadership sometimes, but I also really enjoy being hands-on. What I do know is that I want to work somewhere I\'m challenged and learning, with people I respect. The specific title matters less than the impact I\'m having.',
+                        next: 'q2_honest',
+                        score: { honest: 1 }
+                    }
+                ]
+            },
+
+            q2_professional: {
+                type: 'feedback',
+                interviewer: 'Sarah Chen',
+                avatar: '👩‍💼',
+                feedback: 'That\'s a clear and ambitious path. We do have opportunities for growth into senior leadership here, and we value people who think strategically about their development. Your goals align well with our team\'s trajectory.',
+                next: 'question3'
+            },
+
+            q2_creative: {
+                type: 'feedback',
+                interviewer: 'Sarah Chen',
+                avatar: '👩‍💼',
+                feedback: 'I really appreciate that perspective. Some of our best people are the ones who stay curious and follow their interests rather than just climbing a ladder. We need people who aren\'t afraid to pivot and explore new directions.',
+                next: 'question3'
+            },
+
+            q2_honest: {
+                type: 'feedback',
+                interviewer: 'Sarah Chen',
+                avatar: '👩‍💼',
+                feedback: 'You know, I think a lot of people feel that way but are afraid to say it. The pressure to have everything mapped out can be intense. What I\'m hearing is that you value growth and impact over a specific title, which actually tells me a lot about what motivates you.',
+                next: 'question3'
+            },
+
+            question3: {
+                type: 'question',
+                questionNumber: 3,
+                totalQuestions: 3,
+                interviewer: 'Sarah Chen',
+                avatar: '👩‍💼',
+                question: 'Why do you want to work at TechVision Solutions? What interests you about this role specifically?',
+                choices: [
+                    {
+                        type: 'professional',
+                        label: 'Professional',
+                        text: 'TechVision has an impressive track record of launching successful B2B products, particularly in the enterprise space. Your recent expansion into AI-powered analytics aligns perfectly with my experience. I\'m excited about the scale - working with Fortune 500 clients - and the opportunity to join at a growth stage where I can make a real impact on product direction.',
+                        next: 'outcome_professional',
+                        score: { professional: 1 }
+                    },
+                    {
+                        type: 'creative',
+                        label: 'Creative',
+                        text: 'I\'ve been following TechVision for a while, and what really grabbed me was your blog post about "building products people love, not just use." That philosophy resonates with me. Also, I noticed you let PMs run experiments and iterate quickly rather than having everything locked down in annual roadmaps. That kind of autonomy and trust in the PM role is rare, and it\'s exactly the environment where I thrive.',
+                        next: 'outcome_creative',
+                        score: { creative: 1 }
+                    },
+                    {
+                        type: 'honest',
+                        label: 'Honest',
+                        text: 'Full transparency? I\'m drawn to several things. The product is genuinely interesting - you\'re solving real problems. The team seems collaborative based on everything I\'ve seen. And honestly, the growth trajectory of the company means there will be opportunities to take on more responsibility. I also need to be direct - the compensation and benefits are competitive, which matters to me. But I wouldn\'t be here if I didn\'t think I\'d enjoy the work.',
+                        next: 'outcome_honest',
+                        score: { honest: 1 }
+                    }
+                ]
+            },
+
+            outcome_professional: {
+                type: 'outcome',
+                result: 'hired',
+                icon: '🎉',
+                title: 'You Got The Job!',
+                description: 'Your professional, polished approach throughout the interview impressed Sarah. Your structured thinking, clear career trajectory, and research into the company demonstrated that you\'re serious and prepared. TechVision offers you the position with a competitive salary and a clear path to senior leadership.',
+                details: 'Your professional demeanor and strategic answers showed you\'re ready to hit the ground running. You\'ll start in two weeks leading the enterprise analytics product line.'
+            },
+
+            outcome_creative: {
+                type: 'outcome',
+                result: 'unexpected',
+                icon: '🚀',
+                title: 'A Different Opportunity',
+                description: 'Sarah was impressed by your creative thinking and willingness to challenge conventional approaches. While the original Product Manager role has been filled, she introduces you to the Innovation Lab team. They\'re looking for someone to lead experimental product initiatives with more autonomy and risk-taking.',
+                details: 'It\'s a smaller team with less structure but more freedom. The role is technically a lateral move, but you\'d be building something new from scratch. Sarah thinks your style would be perfect for it. The choice is yours.'
+            },
+
+            outcome_honest: {
+                type: 'outcome',
+                result: 'hired',
+                icon: '✨',
+                title: 'You Got The Job!',
+                description: 'Your honesty and authenticity throughout the interview stood out to Sarah. In a sea of rehearsed answers, your willingness to be vulnerable and direct was refreshing. TechVision values cultural fit highly, and your transparency suggests you\'d thrive in their collaborative environment.',
+                details: 'Sarah specifically mentions that she appreciates candidates who bring their whole selves to work. You\'re offered the position with strong support for professional development and work-life balance. Your directness about compensation also led to a slightly higher starting salary than initially budgeted.'
+            }
+        };
+
+        let currentScene = 'intro';
+        let scores = { professional: 0, creative: 0, honest: 0 };
+
+        function displayScene(sceneKey) {
+            const scene = interviewData[sceneKey];
+            const contentDiv = document.getElementById('interview-content');
+            
+            contentDiv.classList.remove('fade-in');
+            
+            setTimeout(() => {
+                let html = '';
+
+                if (scene.type === 'intro') {
+                    html = `
+                        <div class="interviewer-section">
+                            <div class="interviewer-avatar">${scene.avatar}</div>
+                            <div class="interviewer-speech">
+                                <div class="interviewer-name">${scene.interviewer}</div>
+                                <div class="question-text">${scene.text.replace(/\n\n/g, '<br><br>')}</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button class="restart-btn" onclick="makeChoice('${scene.next}')">${scene.button}</button>
+                        </div>
+                    `;
+                } else if (scene.type === 'question') {
+                    const progress = (scene.questionNumber / scene.totalQuestions) * 100;
+                    html = `
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="question-number">Question ${scene.questionNumber} of ${scene.totalQuestions}</div>
+                        <div class="interviewer-section">
+                            <div class="interviewer-avatar">${scene.avatar}</div>
+                            <div class="interviewer-speech">
+                                <div class="interviewer-name">${scene.interviewer}</div>
+                                <div class="question-text">${scene.question}</div>
+                            </div>
+                        </div>
+                        <div class="response-section">
+                            <div class="response-label">How do you respond?</div>
+                            <div class="choices">
+                    `;
+                    
+                    scene.choices.forEach(choice => {
+                        const icons = {
+                            professional: '💼',
+                            creative: '💡',
+                            honest: '💬'
+                        };
+                        const icon = icons[choice.type] || '💭';
+                        
+                        html += `
+                            <div class="choice-btn ${choice.type}-choice" onclick="selectAnswer('${choice.next}', ${JSON.stringify(choice.score).replace(/"/g, '&quot;')})">
+                                <div class="choice-header">
+                                    <div class="choice-icon ${choice.type}">${icon}</div>
+                                    <div class="choice-type ${choice.type}">${choice.label} Response</div>
+                                </div>
+                                <div class="choice-text">${choice.text}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                } else if (scene.type === 'feedback') {
+                    html = `
+                        <div class="interviewer-section">
+                            <div class="interviewer-avatar">${scene.avatar}</div>
+                            <div class="interviewer-speech">
+                                <div class="interviewer-name">${scene.interviewer}</div>
+                                <div class="question-text">${scene.feedback}</div>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button class="restart-btn" onclick="makeChoice('${scene.next}')">Continue →</button>
+                        </div>
+                    `;
+                } else if (scene.type === 'outcome') {
+                    html = `
+                        <div class="outcome-section">
+                            <div class="outcome-title">Interview Complete</div>
+                            <div class="outcome-text">Thank you for your time today. We'll be in touch soon with our decision.</div>
+                        </div>
+                        <div class="result-card result-${scene.result}">
+                            <div class="result-icon">${scene.icon}</div>
+                            <div class="result-title">${scene.title}</div>
+                            <div class="result-description">${scene.description}</div>
+                        </div>
+                        <div class="outcome-section">
+                            <div class="outcome-text">${scene.details}</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <button class="restart-btn" onclick="restartInterview()">↺ Try Different Responses</button>
+                        </div>
+                    `;
+                }
+                
+                contentDiv.innerHTML = html;
+                contentDiv.classList.add('fade-in');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+        }
+
+        function makeChoice(nextScene) {
+            currentScene = nextScene;
+            displayScene(nextScene);
+        }
+
+        function selectAnswer(nextScene, scoreObj) {
+            // Update scores
+            for (let key in scoreObj) {
+                scores[key] += scoreObj[key];
+            }
+            makeChoice(nextScene);
+        }
+
+        function restartInterview() {
+            currentScene = 'intro';
+            scores = { professional: 0, creative: 0, honest: 0 };
+            displayScene('intro');
+        }
+
+        // Initialize
+        displayScene('intro');
+    </script>
+</body>
+</html>

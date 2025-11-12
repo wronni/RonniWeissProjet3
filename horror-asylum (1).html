@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Abandoned Asylum</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(to bottom, #0a0a0a, #1a1a2e);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(20, 20, 30, 0.9);
+            border: 2px solid #3a3a4a;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(139, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #8b0000;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        .story-text {
+            font-size: 1.2em;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            color: #d0d0d0;
+            text-align: justify;
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, #2a0000, #1a0000);
+            color: #fff;
+            border: 2px solid #6a0000;
+            padding: 20px 25px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-family: 'Georgia', serif;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .choice-icon {
+            font-size: 2em;
+            min-width: 40px;
+            text-align: center;
+            filter: drop-shadow(0 0 8px rgba(139, 0, 0, 0.6));
+        }
+
+        .choice-text {
+            flex: 1;
+        }
+
+        .choice-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #ff0000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .choice-btn:hover::before {
+            opacity: 1;
+        }
+
+        .choice-btn:hover {
+            background: linear-gradient(to right, #4a0000, #6a0000);
+            border-color: #8b0000;
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(139, 0, 0, 0.5);
+        }
+
+        .choice-btn:active {
+            transform: translateX(3px);
+        }
+
+        .restart-btn {
+            background: linear-gradient(to right, #1a1a2e, #2a2a4e);
+            color: #fff;
+            border: 2px solid #4a4a6e;
+            padding: 15px 30px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-family: 'Georgia', serif;
+        }
+
+        .restart-btn:hover {
+            background: linear-gradient(to right, #2a2a4e, #3a3a6e);
+            border-color: #6a6a8e;
+            box-shadow: 0 0 15px rgba(74, 74, 110, 0.5);
+        }
+
+        .ending {
+            background: rgba(139, 0, 0, 0.1);
+            border-left: 4px solid #8b0000;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .ending-title {
+            font-size: 1.5em;
+            color: #ff4444;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .story-text {
+                font-size: 1.1em;
+            }
+
+            .choice-btn {
+                font-size: 1em;
+                padding: 15px 20px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Abandoned Asylum</h1>
+        <p class="subtitle">A Horror Interactive Experience</p>
+        <div id="story-content" class="fade-in">
+            <!-- Story content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const story = {
+            start: {
+                text: "The rusted gates of Blackwood Asylum creak open as you push through. The building looms before you, its broken windows like empty eye sockets staring into your soul. You've come here searching for answers about your sister's disappearance three months ago. The police gave up, but you won't.\n\nAs you step inside the decaying entrance hall, the smell of mold and decay fills your nostrils. To your left, a dark staircase leads upward. To your right, a door marked 'BASEMENT' hangs ajar. Straight ahead, the main corridor stretches into darkness.\n\nWhat do you do?",
+                choices: [
+                    { text: "Go upstairs to the patient rooms", next: "upstairs", icon: "🪜" },
+                    { text: "Investigate the basement", next: "basement", icon: "🔦" },
+                    { text: "Walk down the main corridor", next: "corridor", icon: "🚶" }
+                ]
+            },
+            upstairs: {
+                text: "The wooden stairs groan under your weight as you climb. Each step echoes through the empty building. At the top, you find yourself in a long hallway lined with patient rooms. Most doors are locked or rusted shut.\n\nOne door is slightly open, and you hear something—a soft scratching sound coming from inside. Your flashlight flickers.\n\nWhat do you do?",
+                choices: [
+                    { text: "Enter the room with the scratching sound", next: "scratchingRoom", icon: "🚪" },
+                    { text: "Try other doors in the hallway", next: "otherDoors", icon: "🔍" },
+                    { text: "Go back downstairs", next: "start", icon: "🔙" }
+                ]
+            },
+            basement: {
+                text: "You descend into darkness, your flashlight barely cutting through the thick gloom. The air grows colder with each step. At the bottom, you find yourself in what appears to be an old morgue. Metal tables are still set up, and filing cabinets line the walls.\n\nYou notice fresh footprints in the dust leading to a heavy door at the far end. Your sister's necklace lies on one of the tables.\n\nWhat do you do?",
+                choices: [
+                    { text: "Follow the footprints through the heavy door", next: "followFootprints", icon: "🚪" },
+                    { text: "Search the filing cabinets for records", next: "searchFiles", icon: "📁" },
+                    { text: "Take the necklace and leave immediately", next: "leaveWithNecklace", icon: "💎" }
+                ]
+            },
+            corridor: {
+                text: "You walk slowly down the main corridor, your footsteps echoing. Debris litters the floor—broken glass, old medical equipment, scattered papers. The walls are covered in peeling paint and strange scratches.\n\nYou reach what appears to be the main office. Through the grimy window, you see file folders scattered across a desk. Suddenly, you hear footsteps behind you.\n\nWhat do you do?",
+                choices: [
+                    { text: "Hide in the office quickly", next: "hideOffice", icon: "🫣" },
+                    { text: "Turn around and confront whoever is there", next: "confront", icon: "👤" },
+                    { text: "Run back to the entrance", next: "runAway", icon: "🏃" }
+                ]
+            },
+            scratchingRoom: {
+                text: "You push the door open slowly. The scratching stops. Inside, you see words carved into the walls: 'HELP ME' repeated hundreds of times. In the corner, huddled and shaking, is a figure.\n\nAs your light falls on them, they turn. It's your sister—but something is wrong. Her eyes are vacant, and she doesn't seem to recognize you. She whispers, 'They're still here. They never left.'\n\nWhat do you do?",
+                choices: [
+                    { text: "Try to help her up and escape together", next: "escapeWithSister", icon: "🤝" },
+                    { text: "Ask her what happened", next: "askSister", icon: "💬" },
+                    { text: "Call for help on your phone", next: "callHelp", icon: "📱" }
+                ]
+            },
+            otherDoors: {
+                text: "You try several doors, but most are locked tight. Finally, one opens into what looks like a doctor's office. Inside, you find a journal on the desk. As you flip through it, you discover horrifying experiments were conducted here—mind control, psychological torture.\n\nThe last entry mentions 'subjects that remained' and a 'permanent staff.' The date is from last week.\n\nSuddenly, all the doors in the hallway slam shut simultaneously.",
+                choices: [
+                    { text: "Try to break out through the window", next: "breakWindow", icon: "🪟" },
+                    { text: "Hide and wait", next: "hideAndWait", icon: "🤫" },
+                    { text: "Search the office for another exit", next: "searchOffice", icon: "🔍" }
+                ]
+            },
+            followFootprints: {
+                text: "You push through the heavy door and find yourself in a tunnel. The footprints continue ahead, but you also hear voices chanting somewhere in the distance. The tunnel splits in two directions—one toward the voices, one away from them.\n\nThe voices sound almost hypnotic, calling you forward.",
+                choices: [
+                    { text: "→ Follow the voices", next: "followVoices" },
+                    { text: "→ Take the other tunnel path", next: "otherTunnel" },
+                    { text: "→ Go back to the morgue", next: "basement" }
+                ]
+            },
+            searchFiles: {
+                text: "You pull open the filing cabinets and find patient records dating back decades. Then you see it—your sister's name on a recent file. According to the notes, she's been classified as a 'permanent resident' and is being kept in 'Ward C for observation.'\n\nYou hear footsteps coming down the basement stairs.\n\nWhat do you do?",
+                choices: [
+                    { text: "→ Hide behind the cabinets", next: "hideBasement" },
+                    { text: "→ Take the file and run through the heavy door", next: "runWithFile" },
+                    { text: "→ Confront whoever is coming", next: "confrontBasement" }
+                ]
+            },
+            leaveWithNecklace: {
+                text: "You grab the necklace and sprint back up the stairs. Your heart pounds as you race toward the exit. But when you reach the entrance hall, the front door is now locked. The windows are barred from the outside.\n\nYou hear laughter echoing through the building. A voice calls out: 'You can't save her. You can't even save yourself.'\n\nYou're trapped.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "TRAPPED FOREVER"
+            },
+            hideOffice: {
+                text: "You duck into the office and crouch behind the desk. Through the door crack, you see a figure in a stained white coat walk past. They're humming something unsettling.\n\nAfter they pass, you notice the file on the desk is labeled 'PROJECT RESURRECT - ACTIVE SUBJECTS.' Your sister's photo is paper-clipped to the first page.",
+                choices: [
+                    { text: "→ Take the file and sneak out", next: "takeFile" },
+                    { text: "→ Follow the figure in the white coat", next: "followFigure" },
+                    { text: "→ Stay hidden and read the entire file", next: "readFile" }
+                ]
+            },
+            confront: {
+                text: "You spin around, shining your flashlight directly at the source of the footsteps. A man in a tattered white coat stands there, his face gaunt and pale. He holds up his hands.\n\n'Please,' he whispers. 'You shouldn't be here. They'll make you stay. Like they made me stay. Like they made all of us stay.'\n\nHe points down the corridor. 'Ward C. That's where they keep the new ones. But once you go there, you can't leave.'",
+                choices: [
+                    { text: "→ Ask him to help you find your sister", next: "askForHelp" },
+                    { text: "→ Go to Ward C alone", next: "wardC" },
+                    { text: "→ Try to convince him to escape together", next: "escapeDoctor" }
+                ]
+            },
+            runAway: {
+                text: "Panic takes over and you sprint back toward the entrance. But the building seems different now—hallways stretch longer, doors lead to places they shouldn't. You're running in circles.\n\nFinally, exhausted, you collapse in what looks like a patient room. As your vision fades, you see figures in white coats approaching. One of them is smiling.\n\n'Another permanent resident,' they say. 'How wonderful.'",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "LOST IN THE MAZE"
+            },
+            escapeWithSister: {
+                text: "You grab your sister's hand and pull her up. She's weak but follows you. Together, you navigate back through the asylum. Every shadow seems to move, every sound echoes with menace.\n\nAs you reach the entrance, your sister suddenly stops. 'I can't leave,' she whispers. 'If I leave, they'll come for you too. They're inside my head now.'\n\nYou can see the exit. Freedom is just steps away.",
+                choices: [
+                    { text: "→ Drag her out anyway", next: "forcedEscape" },
+                    { text: "→ Stay with her and figure out how to help", next: "stayAndHelp" },
+                    { text: "→ Promise to get help and come back", next: "promiseReturn" }
+                ]
+            },
+            askSister: {
+                text: "You kneel beside her and ask what happened. She speaks in broken sentences, describing experiments, procedures, voices that never stop. 'They wanted to see if they could keep consciousness alive forever. Trap it here. We're all trapped here now.'\n\nShe grabs your arm with surprising strength. 'Don't let them do it to you. Run. Run now!'\n\nBut it's too late. You hear them coming—footsteps from every direction.",
+                choices: [
+                    { text: "→ Fight your way out", next: "fightOut" },
+                    { text: "→ Barricade the room", next: "barricade" },
+                    { text: "→ Jump out the window", next: "jumpWindow" }
+                ]
+            },
+            callHelp: {
+                text: "You pull out your phone but there's no signal. Your sister laughs—a hollow, broken sound. 'There's never a signal. They made sure of that. No one can call out. No one can leave.'\n\nYour phone's screen flickers and displays a message you didn't type: 'WELCOME TO THE FAMILY.'\n\nThe door behind you slams shut.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "NO ESCAPE"
+            },
+            breakWindow: {
+                text: "You grab a chair and smash it through the window. Glass shatters everywhere. You climb through, cutting yourself on the jagged edges, but you're free. You're outside.\n\nYou run through the overgrown grounds toward the gate. Behind you, you can hear screaming—dozens of voices calling your name. But you don't look back. You climb the gate and drop to the other side.\n\nYou've escaped, but your sister is still in there. And you know they won't stop until they bring you back.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "ESCAPED - BUT AT WHAT COST?"
+            },
+            hideAndWait: {
+                text: "You hide under the desk and wait. Time passes—minutes or hours, you can't tell. The sounds eventually fade. When you emerge, it's darker outside. Night has fallen.\n\nYou carefully make your way down the hallway. That's when you realize: every room now has someone in it. Patients sitting perfectly still, staring at nothing. And they all have your sister's face.\n\nYou've been here much longer than you thought.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "TIME HAS NO MEANING HERE"
+            },
+            searchOffice: {
+                text: "You frantically search the office and find a hidden door behind a bookshelf. It leads to a service stairwell. You descend quickly and find yourself in the basement morgue.\n\nThat's where you find them—all the missing people from town, lying on tables, hooked up to strange machines. Your sister is there too. But they're not dead. Their eyes are open, trapped in their own minds.\n\nYou now know the truth. But knowledge comes with a price.",
+                choices: [
+                    { text: "→ Try to shut down the machines", next: "shutdownMachines" },
+                    { text: "→ Document everything and escape to expose them", next: "documentAndEscape" },
+                    { text: "→ Destroy the entire facility", next: "destroyFacility" }
+                ]
+            },
+            followVoices: {
+                text: "The voices grow louder, more insistent. You feel yourself drawn forward, unable to resist. You enter a large chamber filled with candles. In the center, figures in robes surround a glowing symbol on the floor.\n\nThey turn to you in unison. 'We've been waiting,' they say with one voice. 'Your sister told us you would come. Join us. Stay forever.'\n\nYou feel your will slipping away.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "ABSORBED BY THE COLLECTIVE"
+            },
+            otherTunnel: {
+                text: "You take the other tunnel, running away from the voices. The passage grows narrower, forcing you to crouch, then crawl. Finally, you see light ahead—an exit to the outside!\n\nYou burst out into the forest behind the asylum. You're free! You run to your car and speed away. But as you drive, you notice something in your rearview mirror: a figure standing in the road behind you. It looks like your sister. She's waving. She's smiling.\n\nAnd you realize: you never found her. You left her behind.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "YOU ESCAPED - ALONE"
+            },
+            hideBasement: {
+                text: "You crouch behind the cabinets as someone enters. Through a gap, you see a doctor in a white coat. They go straight to your sister's file and add a new note: 'Sibling has entered facility. Prepare two beds in Ward C.'\n\nThey know you're here. They've been expecting you.",
+                choices: [
+                    { text: "→ Attack the doctor and escape", next: "attackDoctor" },
+                    { text: "→ Wait for them to leave, then follow", next: "followDoctor" },
+                    { text: "→ Reveal yourself and demand answers", next: "demandAnswers" }
+                ]
+            },
+            runWithFile: {
+                text: "You grab the file and sprint through the heavy door into the tunnels. You run blindly, taking turns at random. Finally, you see light—an exit grate above you!\n\nYou climb up and emerge in the woods outside. You've made it out with evidence. You call the police immediately.\n\nTwo weeks later, the police raid the asylum. They find everyone who was missing, including your sister. But the doctors who ran the facility are never found. And sometimes, late at night, you still hear the voices calling you back.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "HEROIC ESCAPE - MISSION ACCOMPLISHED"
+            },
+            confrontBasement: {
+                text: "You step out from behind the cabinets. 'I know you have my sister!' you shout.\n\nThe doctor smiles coldly. 'Yes. And soon we'll have you too. You see, we can't let anyone leave once they know our secrets. The asylum must be fed. It hungers for consciousness, for souls to trap within its walls.'\n\nThey pull out a syringe.",
+                choices: [
+                    { text: "→ Fight back", next: "fightDoctor" },
+                    { text: "→ Try to reason with them", next: "reasonDoctor" },
+                    { text: "→ Run!", next: "runDoctor" }
+                ]
+            },
+            takeFile: {
+                text: "You grab the file and quietly slip out of the office. Inside, you find detailed maps of the asylum, including a section marked 'Ward C - Permanent Resident Housing' and an escape route through the old service tunnels.\n\nFollowing the map, you navigate through the building, getting closer to Ward C. You can save your sister. You can both escape.\n\nYou reach the ward and find her room. She's sitting on a bed, staring at the wall. 'I knew you'd come,' she says. But her voice sounds wrong.\n\n'They knew you'd come too,' she continues. 'That's why they let you find the map.'",
+                choices: [
+                    { text: "→ It's a trap - run to the service tunnels alone", next: "trapRun" },
+                    { text: "→ Take your sister anyway", next: "takeSisterAnyway" },
+                    { text: "→ This isn't your real sister - leave", next: "notRealSister" }
+                ]
+            },
+            followFigure: {
+                text: "You follow the figure in the white coat from a distance. They lead you through a series of corridors to a locked ward. They use a keycard to enter. You catch the door before it closes and slip inside.\n\nInside is a laboratory filled with monitoring equipment. On screens, you see dozens of people lying in beds, their brain activity displayed. One screen shows your sister. She's awake, but trapped in some kind of induced dream state.\n\nThe figure turns around. It's not a doctor. It's your sister's boyfriend—the one who went missing with her.",
+                choices: [
+                    { text: "→ Ask him what happened", next: "askBoyfriend" },
+                    { text: "→ Try to free your sister", next: "freeSister" },
+                    { text: "→ Disable all the equipment", next: "disableEquipment" }
+                ]
+            },
+            readFile: {
+                text: "You stay hidden and read through the entire file. What you discover is horrifying: the asylum never closed. A group of rogue doctors continued their experiments in secret, developing a method to trap human consciousness within the building itself.\n\nYour sister was one of their recent subjects. The procedure was successful—her consciousness has been 'uploaded' into the asylum's structure. She is the building now. And the building is hungry for more.\n\nAs you finish reading, you realize the office door has locked itself. The lights go out. And you hear your sister's voice coming from the walls: 'Thank you for coming. Now we can be together forever.'",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "ABSORBED INTO THE ASYLUM"
+            },
+            askForHelp: {
+                text: "You ask the man to help you find your sister. He hesitates, then nods. 'I'll help you. But we must be quick. They make their rounds every hour.'\n\nHe leads you through hidden passages, moving quickly. 'I was a patient here once,' he explains. 'They cured my illness, but the price was my freedom. I'm bound to this place now. We all are.'\n\nYou reach Ward C. Your sister is there, along with two dozen others, all hooked up to machines. 'We don't have time to save everyone,' the man says. 'Only your sister. Choose quickly.'",
+                choices: [
+                    { text: "→ Save only your sister", next: "saveOnlySister" },
+                    { text: "→ Try to save everyone", next: "saveEveryone" },
+                    { text: "→ This feels wrong - it's a trap", next: "feelsTrap" }
+                ]
+            },
+            wardC: {
+                text: "You go to Ward C alone. The hallway is lined with rooms, each containing a person lying motionless on a bed. You find your sister in the last room.\n\nAs you enter, she opens her eyes. 'You came,' she whispers. 'But you shouldn't have. They needed someone from outside. Someone untainted. They needed you to complete the ritual.'\n\nThe door locks behind you. Symbols on the walls begin to glow. You feel your consciousness starting to separate from your body.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "THE RITUAL IS COMPLETE"
+            },
+            escapeDoctor: {
+                text: "You try to convince the man to escape with you. At first he refuses, saying it's impossible. But your determination moves him.\n\n'There might be a way,' he finally says. 'The old service tunnels. They connect to the sewer system. But we'd need to disable the surveillance system first, and I'd need my colleague's help. She's in the medical wing.'\n\nTogether, you formulate a plan. It's dangerous, but it might work.",
+                choices: [
+                    { text: "→ Trust him and execute the plan", next: "executePlan" },
+                    { text: "→ This seems too elaborate - go to the tunnels now", next: "tunnelsNow" },
+                    { text: "→ Split up - you get your sister, he gets his colleague", next: "splitUp" }
+                ]
+            },
+            forcedEscape: {
+                text: "You pull your sister through the exit with all your strength. As you cross the threshold, she screams—a sound of pure agony. But you don't stop. You drag her to your car and drive away.\n\nMiles down the road, she finally calms down. 'You saved me,' she sobs. 'They had their hooks in my mind, but you broke their hold.'\n\nYou take her to the hospital. The doctors find evidence of experimental drugs in her system, but she'll recover. You've both escaped. Together.\n\nBut sometimes, in your dreams, you still hear the asylum calling you back.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "TRIUMPHANT ESCAPE - TOGETHER"
+            },
+            stayAndHelp: {
+                text: "You refuse to leave without finding a way to help her. Together, you explore the asylum, searching for answers. In a hidden laboratory, you find the equipment they used on her—and the reversal process.\n\nIt takes hours, but you manage to free her mind from their control. However, the process triggers an alarm. The entire facility begins to lock down. You both run for the exit.\n\nYou make it out just as the doors seal behind you. Looking back, you see faces in the windows—all the others who are still trapped. You couldn't save them all, but you saved your sister.\n\nYou call the authorities with evidence, but when they arrive, the asylum is empty. The other patients are gone. The equipment has vanished. No one believes you.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "SAVED YOUR SISTER - BUT THE EVIL REMAINS"
+            },
+            promiseReturn: {
+                text: "You promise your sister you'll get help and come back. She nods, tears streaming down her face. You run to your car and drive straight to the police station.\n\nBut when you try to explain, they don't believe you. 'The asylum has been closed for decades,' they say. You show them the photos on your phone, but they're all corrupted—just static and darkness.\n\nYou return to the asylum alone, but you can't find the entrance. The gates are rusted shut, impossibly overgrown. The building looks like it's been abandoned for a hundred years.\n\nYou never see your sister again. But sometimes, on quiet nights, you hear her voice calling from far away.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "BROKEN PROMISE"
+            },
+            fightOut: {
+                text: "You and your sister fight together. She's weak, but determined. You overpower the first few staff members who enter, then run together through the building.\n\nThe asylum seems to fight back—doors closing, lights going out, hallways changing. But you persist. Finally, you see the exit. You both sprint toward freedom.\n\nYou burst through the doors into daylight. You're both injured, exhausted, but alive. As you drive away, you watch the asylum in your rearview mirror. For just a moment, you swear you see it move, like a living thing.\n\nYou've both escaped, but you know the asylum will never stop looking for you.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "FOUGHT YOUR WAY TO FREEDOM"
+            },
+            barricade: {
+                text: "You push furniture against the door, barricading yourselves in. The banging and scratching from outside is relentless. You and your sister huddle together in the corner.\n\nHours pass. Days? Time loses meaning. The voices outside never stop. They promise peace if you just open the door. They promise to make the fear stop.\n\nEventually, hunger and thirst become unbearable. Your sister looks at the door. 'Maybe they're right,' she whispers. 'Maybe it would be better to stop fighting.'\n\nYou're so tired. So tired of being afraid.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "STARVED INTO SUBMISSION"
+            },
+            jumpWindow: {
+                text: "You grab your sister and crash through the window together. You fall into darkness, plummeting down. You hit something—a dumpster full of old mattresses—that breaks your fall.\n\nYou're both hurt, but alive. You help each other up and limp away from the building as fast as you can. Neither of you looks back.\n\nYou manage to get to your car and drive to the hospital. The doctors find evidence of the experiments and call the police. A raid is organized.\n\nBut when the authorities storm the asylum the next day, they find it completely empty. No equipment. No patients. No evidence. Just an old, abandoned building.\n\nYour sister recovers slowly, but she never speaks of what happened inside. Sometimes you catch her staring out windows, as if searching for something. Or watching for someone to come.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "ESCAPED - BUT MARKED FOREVER"
+            },
+            shutdownMachines: {
+                text: "You start pulling plugs and shutting down machines. Alarms blare throughout the facility. The bodies begin to stir—people gasping, waking from their forced sleep.\n\nChaos erupts as dozens of confused, traumatized people wake up simultaneously. Security floods into the basement. But in the confusion, you grab your sister and help her to her feet.\n\n'Run!' someone shouts—one of the other captives. 'We'll hold them off!'\n\nYou and your sister escape through the tunnels while the others create a distraction. You emerge outside and run into the forest. Behind you, you hear sirens. The facility is being raided.\n\nYou've done it. You've saved them all.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "HERO'S VICTORY - EVERYONE SAVED"
+            },
+            documentAndEscape: {
+                text: "You pull out your phone and start recording everything—the machines, the patients, the equipment. Your sister is weak but conscious. You help her up.\n\n'We have to leave them,' you tell her. 'To save everyone, we need evidence.'\n\nYou escape through a service tunnel, your phone full of video proof. You drive straight to the nearest news station.\n\nThe story goes viral. The asylum is raided within hours. Everyone is rescued. The doctors are arrested. You and your sister become heroes.\n\nBut the nightmares never stop. Every night, you see the faces of the people you left behind, even for a moment. You saved them all in the end, but the guilt of those minutes lingers.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "VICTORY THROUGH EVIDENCE"
+            },
+            destroyFacility: {
+                text: "You find the main power generator and start smashing control panels. Sparks fly. The building's lights flicker. You grab anything flammable—old papers, chemicals—and start a fire.\n\nThe flames spread quickly through the old building. Alarms wail. You wake your sister and carry her out. As you escape, you see others—staff and patients—fleeing the burning building.\n\nYou watch from a distance as the asylum burns to the ground. All the evidence. All the equipment. Everything turns to ash.\n\nYour sister is safe. But so are the doctors who did this. They escaped in the chaos. And without evidence, they can never be brought to justice. They could start again somewhere else.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "BURNED BUT NOT DEFEATED"
+            },
+            attackDoctor: {
+                text: "You leap out and tackle the doctor. You're not a violent person, but adrenaline and fear make you strong. The doctor goes down, hitting their head on the metal table.\n\nYou grab their keycard and run. You use it to access Ward C. Your sister is there. You unhook her from the machines and help her to her feet.\n\n'We have to go. Now!' you tell her.\n\nYou escape through the service tunnels, your sister leaning on you for support. You emerge in the woods and make it to your car. As you drive away, you see smoke rising from the asylum. Someone has set it on fire.\n\nYou've both made it out. Together.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "DESPERATE ESCAPE - SUCCESSFUL"
+            },
+            followDoctor: {
+                text: "You wait until the doctor leaves, then follow them quietly. They lead you through a series of corridors to a laboratory you hadn't seen before. Inside, you see the leader of the operation—an elderly doctor surrounded by monitors.\n\n'The sibling is here, as predicted,' your doctor says. 'Should we proceed with dual bonding?'\n\nThe elderly doctor smiles. 'Yes. Family bonds make the strongest connections. They'll be perfect additions.'\n\nYou've heard enough. But as you turn to leave, you find your path blocked by security guards.",
+                choices: [
+                    { text: "→ Fight through them", next: "fightSecurity" },
+                    { text: "→ Surrender and look for an opportunity later", next: "surrenderPlan" },
+                    { text: "→ Cause a distraction and run", next: "distraction" }
+                ]
+            },
+            demandAnswers: {
+                text: "You step out, demanding answers. The doctor looks at you with a mixture of pity and satisfaction.\n\n'Your sister volunteered,' they say. 'She knew the risks. But once the process began, there was no turning back. Her consciousness is now part of this facility. And you, by coming here, have demonstrated the same qualities we look for. Strong family bonds. Determination. Resilience.'\n\nThey pull out a syringe. 'Don't worry. Soon you'll understand. Soon you'll be together forever.'\n\nYou have moments to react.",
+                choices: [
+                    { text: "→ Knock the syringe away and fight", next: "fightDoctor" },
+                    { text: "→ Run for your life", next: "runDoctor" },
+                    { text: "→ Try to negotiate", next: "negotiate" }
+                ]
+            },
+            fightDoctor: {
+                text: "You fight back with everything you have. The doctor is surprised by your resistance. You manage to overpower them and grab their keys.\n\nYou run through the facility, using the keys to open locked doors. You find Ward C and your sister. She's weak but conscious. Together, you fight your way to the service tunnels.\n\nThe escape is harrowing, but you make it out. You both collapse in the woods outside, gasping for air. You've done it. You've both escaped.\n\nLater, you learn that the facility burned down that same night. All evidence was destroyed. The other patients were never found. But your sister is safe. That's what matters.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "FOUGHT AND WON"
+            },
+            reasonDoctor: {
+                text: "You try to reason with them. 'Let everyone go and we won't tell anyone. Please. This is wrong.'\n\nThe doctor laughs. 'Wrong? We're on the verge of defeating death itself. Consciousness can be preserved, transferred, immortalized. Your sister will live forever within these walls. And so will you.'\n\nThey inject you before you can react. The world spins. You feel yourself falling, but you never hit the ground. Instead, you fall inward, becoming part of something vast and terrible.\n\nYou and your sister are together now. Forever. Just not in the way you hoped.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "FAILED NEGOTIATION"
+            },
+            runDoctor: {
+                text: "You turn and run, sprinting through the basement. The doctor gives chase but you're faster. You race up the stairs and through the corridors.\n\nYou find Ward C by pure luck and burst in. Your sister is there. 'No time to explain!' you shout, pulling her from the bed.\n\nTogether you run. The facility seems to twist around you, trying to trap you, but you persist. You see an exit sign and crash through the door.\n\nYou're outside! You've made it! You run to your car, your sister stumbling beside you. You drive away as fast as you can.\n\nYou've both escaped. But you know they'll be looking for you. You'll have to disappear. Start new lives. But at least you'll be together and free.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "ESCAPED - BUT ON THE RUN"
+            },
+            trapRun: {
+                text: "You realize it's a trap. You leave your 'sister' in the room and sprint toward the service tunnels using the map. Behind you, you hear screaming—not just from the room, but from everywhere in the building.\n\nThe tunnels are dark and narrow, but you crawl through. You emerge outside, covered in filth but free. You run to your car and drive away.\n\nLater, you learn that the figure in the room wasn't your sister—it was some kind of lure, a trap to catch you. The real your sister... you never find out what happened to her. You escaped, but at the cost of never knowing the truth.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "ESCAPED - ALONE AND UNCERTAIN"
+            },
+            takeSisterAnyway: {
+                text: "Trap or not, you won't leave without her. You grab her hand and pull her up. 'Come on. We're leaving. Now.'\n\nTo your surprise, she follows. You navigate through the facility using the map, your sister moving like she's in a trance. You reach the service tunnels.\n\nAs you're escaping, she suddenly grabs you. 'Thank you,' she says, and for a moment, you see your real sister in her eyes. 'Thank you for not giving up on me.'\n\nYou both make it out. In the weeks that follow, she slowly recovers. The doctors say it will take time, but she'll heal. You saved her.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "LOVE CONQUERS ALL"
+            },
+            notRealSister: {
+                text: "You back away slowly. 'You're not my sister,' you say.\n\nThe figure's face contorts into an unnatural smile. 'No. But I could have been. I was made from her memories, her personality. I'm what she's becoming—part of this place.'\n\nYou run. You don't know where your real sister is. Maybe she's already gone. Maybe she's become the asylum itself. You escape through the tunnels, haunted by what you saw.\n\nYou make it out, but you're forever changed. You never learn what truly happened to your sister. Sometimes that not knowing is worse than any horror you witnessed inside.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "ESCAPED - BUT LOST YOUR SISTER"
+            },
+            askBoyfriend: {
+                text: "You ask what happened to him. His story is heartbreaking—he and your sister came here investigating for a school project. They were captured, experimented on. He was forced to help them, or watch your sister suffer.\n\n'But I found a way,' he whispers. 'I've been sabotaging the equipment. In two hours, there will be a system failure. All the locks will open. We can free everyone. But we have to wait, and we have to be ready.'\n\nDo you trust him?",
+                choices: [
+                    { text: "→ Trust him and wait for the opportunity", next: "trustBoyfriend" },
+                    { text: "→ Free your sister now and escape", next: "freeSisterNow" },
+                    { text: "→ This might be a trick - leave alone", next: "leaveAlone" }
+                ]
+            },
+            freeSister: {
+                text: "You rush to your sister's monitors and start disconnecting them. The boyfriend tries to stop you. 'Wait! You can't just unplug her! It could kill her consciousness!'\n\nBut you don't listen. You pull the wires. Your sister gasps, her body convulsing. Then her eyes open. She's awake. Really awake.\n\n'Let's go!' you shout. The three of you run together. Alarms blare. Staff members appear, but you fight through them. You make it to an exit.\n\nOutside, you all collapse. Your sister is weak but alive. Her boyfriend holds her. 'You did it,' he says. 'You actually did it.'\n\nYou've saved them both.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "BOLD RESCUE - SUCCESS"
+            },
+            disableEquipment: {
+                text: "You start smashing monitors and pulling wires. The boyfriend shouts, 'No! You'll kill them all!'\n\nBut it's too late. The equipment shorts out. Sparks fly. The building's lights flicker and die. Emergency lighting kicks in.\n\nIn the darkness, you hear gasping—dozens of people waking up all at once. Your sister among them. The boyfriend was right—this was dangerous. But everyone is waking up.\n\n'Run!' he shouts. 'Before they reboot the system!'\n\nYou all flee together—you, your sister, the boyfriend, and dozens of other victims. You emerge into daylight. You've freed everyone.\n\nBut in the chaos, some didn't make it. The abrupt disconnection was too much for some of the patients. You saved many, but not all. The victory is hollow.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "MASS ESCAPE - AT A COST"
+            },
+            saveOnlySister: {
+                text: "You make the hardest choice of your life. You disconnect only your sister from the machines. The man helps you carry her. Together, you navigate the hidden passages to an exit.\n\nYour sister is weak but alive. You escape together. As you drive away, you look back at the asylum. You saved your sister, but you left two dozen people behind to suffer.\n\nThe guilt never fully goes away. But your sister is safe. You tell yourself that's what matters. You tell yourself you made the right choice.\n\nYou're not sure you believe it.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "SAVED ONE - LEFT MANY"
+            },
+            saveEveryone: {
+                text: "You refuse to leave anyone behind. You and the man start disconnecting everyone, working as fast as you can. Alarms blare. Staff members are coming.\n\nBut the other patients, once freed, help. Together, you all fight your way to the tunnels. It's chaos—dozens of people, all weak and confused, trying to escape simultaneously.\n\nMiraculously, you all make it to the tunnels. You emerge in the woods. Everyone is free. You call the authorities from your car. The news crews arrive. The asylum is raided.\n\nYou're a hero. You saved them all. The nightmares still come sometimes, but when they do, you remember the faces of the people you saved. It was worth it.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "COMPLETE VICTORY - EVERYONE SAVED"
+            },
+            feelsTrap: {
+                text: "Something feels wrong. 'This is too easy,' you say. 'Why are you really helping me?'\n\nThe man's face changes. His smile becomes something terrible. 'Because we needed you to come this far. To get close enough. You see, the asylum needs maintenance. Fresh souls to keep the system running. Your sister was just bait.'\n\nHe lunges at you. You try to run, but the doors lock. The ward fills with gas. Your vision blurs. The last thing you see is your sister's face on a monitor, tears streaming down her cheeks as she watches you fall.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "TRAPPED BY TRUST"
+            },
+            executePlan: {
+                text: "You trust him. Together with his colleague from the medical wing, you execute the plan. She disables the surveillance while you create a distraction. The man uses the confusion to access Ward C.\n\nIt works perfectly. You free your sister and a dozen others. You all escape through the tunnels. The plan succeeds beyond your wildest hopes.\n\nWeeks later, you testify in court. The doctors are arrested. The victims are treated. Your sister slowly recovers. You've won.\n\nBut sometimes you wonder: was the man really a patient? Or did he have other motives? You'll never know. But you're grateful regardless.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "PERFECT EXECUTION"
+            },
+            tunnelsNow: {
+                text: "You don't trust elaborate plans. 'We go now,' you say. 'No surveillance, no colleague. Just run.'\n\nYou sprint to the service tunnels. The man tries to follow, but you hear him fall behind, calling out. You feel guilty, but you keep running.\n\nYou navigate the tunnels alone and emerge outside. You circle back, enter through a window, and find Ward C on your own. Your sister is there. You free her and escape the way you came.\n\nAs you're leaving, you see security dragging the man away. He tried to follow you and got caught. You feel terrible, but your sister is safe. You had to make a choice.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "ESCAPED - BUT LEFT SOMEONE BEHIND"
+            },
+            splitUp: {
+                text: "You agree to split up. 'Meet at the service tunnels in 10 minutes,' you say.\n\nYou race to Ward C while he goes to the medical wing. You find your sister and disconnect her from the machines. She's groggy but can walk.\n\nYou make it to the tunnels, but the man never arrives. You wait as long as you dare, but eventually you have to leave. You and your sister escape alone.\n\nLater, you learn that he was caught. He's missing now, presumably suffering the same fate as the other patients. You saved your sister, but at the cost of someone who tried to help you.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "PARTIAL SUCCESS"
+            },
+            fightSecurity: {
+                text: "You fight with everything you have. The guards are stronger, but you're desperate. You manage to break free and run, but they're right behind you.\n\nYou race through the facility, taking random turns. Finally, you burst into Ward C. Your sister is there. No time to explain—you grab her and run again.\n\nThe chase is harrowing, but you find an old laundry chute and slide down together. You land in a pile of dirty linens in the basement. From there, you find the tunnels and escape.\n\nYou both make it out, bruised and exhausted, but alive and free.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "FOUGHT YOUR WAY FREE"
+            },
+            surrenderPlan: {
+                text: "You put your hands up and surrender. The guards take you to a room in Ward C—right where you wanted to be.\n\nThey leave you alone, planning to process you later. You wait until night, then pick the lock with a wire you found. You sneak through the ward, finding your sister.\n\nTogether, you creep through the darkened facility. No alarms. No guards. You find an unlocked door and slip outside.\n\nIt's almost too easy. But you don't question it. You're both free. That's all that matters.\n\nThough sometimes you wonder if they let you escape. And if so... why?",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "SUSPICIOUSLY EASY ESCAPE"
+            },
+            distraction: {
+                text: "You grab a nearby fire extinguisher and smash it through a window. Alarms blare. The guards rush toward the sound.\n\nYou run the opposite direction, sprinting through corridors until you find Ward C. Your sister is there. You free her quickly and head for the service tunnels.\n\nThe distraction works perfectly. You both escape through the tunnels and emerge in the woods. Behind you, you hear chaos—sirens, shouts, confusion.\n\nYou've made it. Both of you. Together.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "CLEVER ESCAPE"
+            },
+            negotiate: {
+                text: "You try to negotiate. 'Let my sister go and I'll stay. Isn't that a fair trade?'\n\nThe doctor considers this. 'An interesting proposition. But we don't need you to stay willingly. We can take what we need from you regardless.'\n\nThey inject you. Your vision swims. You feel your consciousness starting to separate from your body. The last thing you see is your sister's face on a monitor, screaming silently.\n\nYou're together now. Both trapped. Both lost. Forever.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "FAILED SACRIFICE"
+            },
+            trustBoyfriend: {
+                text: "You wait. The two hours feel like an eternity. But exactly when he predicted, all the lights go out. Emergency power kicks in, but the locks disengage.\n\n'Now!' he shouts.\n\nYou all run—you, your sister, her boyfriend, and dozens of other captives. The facility is in chaos. Staff members try to stop you, but there are too many of you.\n\nYou all escape through multiple exits. Outside, you call the authorities. The asylum is raided. Everyone is saved. The doctors are arrested.\n\nYour sister's boyfriend was telling the truth. He was a hero. You all were.",
+                ending: true,
+                endingType: "good",
+                endingTitle: "PERFECT VICTORY"
+            },
+            freeSisterNow: {
+                text: "You don't trust anyone anymore. You disconnect your sister immediately and carry her out. Her boyfriend calls after you, but you ignore him.\n\nYou find an exit and escape with your sister. She's weak and disoriented, but alive. You drive her to the hospital.\n\nLater, you learn that two hours after you left, there was indeed a system failure. All the patients escaped. The boyfriend had been telling the truth.\n\nYou saved your sister, but you could have saved everyone. The knowledge haunts you.",
+                ending: true,
+                endingType: "bittersweet",
+                endingTitle: "IMPATIENT RESCUE"
+            },
+            leaveAlone: {
+                text: "You don't trust him. You leave quietly, sneaking back through the facility. You find the tunnels on your own and escape.\n\nYou make it out alone. You call the police, but by the time they arrive, the asylum is empty. Everyone is gone—patients, staff, equipment. Like it was never there.\n\nYou never find your sister. You never learn the truth. You escaped, but at what cost? You're free, but you're alone. Forever wondering what would have happened if you had trusted him.",
+                ending: true,
+                endingType: "bad",
+                endingTitle: "PARANOID AND ALONE"
+            }
+        };
+
+        let currentScene = 'start';
+
+        function displayScene(sceneKey) {
+            const scene = story[sceneKey];
+            const contentDiv = document.getElementById('story-content');
+            
+            contentDiv.classList.remove('fade-in');
+            
+            setTimeout(() => {
+                let html = `<p class="story-text">${scene.text.replace(/\n\n/g, '</p><p class="story-text">')}</p>`;
+                
+                if (scene.ending) {
+                    html += `<div class="ending">
+                        <div class="ending-title">${scene.endingTitle}</div>
+                    </div>`;
+                    html += '<button class="restart-btn" onclick="restartStory()">↺ Start Over</button>';
+                } else {
+                    html += '<div class="choices">';
+                    scene.choices.forEach((choice, index) => {
+                        const icon = choice.icon || '→';
+                        html += `<button class="choice-btn" onclick="makeChoice('${choice.next}')">
+                            <span class="choice-icon">${icon}</span>
+                            <span class="choice-text">${choice.text}</span>
+                        </button>`;
+                    });
+                    html += '</div>';
+                }
+                
+                contentDiv.innerHTML = html;
+                contentDiv.classList.add('fade-in');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+        }
+
+        function makeChoice(nextScene) {
+            currentScene = nextScene;
+            displayScene(nextScene);
+        }
+
+        function restartStory() {
+            currentScene = 'start';
+            displayScene('start');
+        }
+
+        // Initialize the story
+        displayScene('start');
+    </script>
+</body>
+</html>
