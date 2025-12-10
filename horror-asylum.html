@@ -387,11 +387,12 @@
         <button class="music-btn" id="musicToggle" onclick="toggleMusic()">🔇 Music</button>
     </div>
 
-    <!-- Background Music -->
+    <!-- Background Music - Classic Horror Music -->
     <audio id="bgMusic" loop preload="auto">
-        <!-- Multiple sources for better compatibility -->
-        <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_4a409c19b6.mp3" type="audio/mpeg">
-        <source src="https://assets.mixkit.co/active_storage/sfx/2487/2487-preview.mp3" type="audio/mpeg">
+        <!-- Bach's Toccata and Fugue in D Minor - iconic horror organ music -->
+        <source src="https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d7/HANDEL_-_Toccata_and_Fugue_in_D_minor.ogg/HANDEL_-_Toccata_and_Fugue_in_D_minor.ogg.mp3" type="audio/mpeg">
+        <!-- Backup source -->
+        <source src="https://ia802606.us.archive.org/35/items/Bach_Toccata_Fugue_d-moll/Bach_Toccata_Fugue_d-moll_64kb.mp3" type="audio/mpeg">
     </audio>
 
     <div class="game-container">
@@ -520,7 +521,7 @@
         const musicToggle = document.getElementById('musicToggle');
 
         // Set volume to a comfortable level
-        bgMusic.volume = 0.3;
+        bgMusic.volume = 0.25;
 
         function toggleMusic() {
             if (musicPlaying) {
