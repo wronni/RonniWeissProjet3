@@ -6,7 +6,7 @@
     <title>Asylum Escape - Visual Interactive Story</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Butcherman&family=Eater&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Butcherman&family=Eater&family=Special+Elite&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -167,11 +167,12 @@
         }
 
         .choice-hint {
-            font-family: 'Butcherman', cursive;
-            font-size: 0.95em;
-            color: #999;
+            font-family: 'Special Elite', cursive;
+            font-size: 1em;
+            color: #ccc;
             font-style: italic;
             text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            line-height: 1.4;
         }
 
         .ending-panel {
@@ -387,8 +388,10 @@
     </div>
 
     <!-- Background Music -->
-    <audio id="bgMusic" loop>
-        <source src="https://www.soundjay.com/horror/sounds/horror-ambience-01.mp3" type="audio/mpeg">
+    <audio id="bgMusic" loop preload="auto">
+        <!-- Multiple sources for better compatibility -->
+        <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_4a409c19b6.mp3" type="audio/mpeg">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2487/2487-preview.mp3" type="audio/mpeg">
     </audio>
 
     <div class="game-container">
@@ -516,6 +519,9 @@
         const bgMusic = document.getElementById('bgMusic');
         const musicToggle = document.getElementById('musicToggle');
 
+        // Set volume to a comfortable level
+        bgMusic.volume = 0.3;
+
         function toggleMusic() {
             if (musicPlaying) {
                 bgMusic.pause();
@@ -523,12 +529,14 @@
                 musicToggle.classList.remove('playing');
                 musicPlaying = false;
             } else {
-                bgMusic.play().catch(e => {
-                    console.log('Audio play failed:', e);
+                bgMusic.play().then(() => {
+                    musicToggle.textContent = '🔊 Music';
+                    musicToggle.classList.add('playing');
+                    musicPlaying = true;
+                }).catch(e => {
+                    console.error('Audio play failed:', e);
+                    alert('Unable to play background music. Click the music button to try again.');
                 });
-                musicToggle.textContent = '🔊 Music';
-                musicToggle.classList.add('playing');
-                musicPlaying = true;
             }
         }
 
@@ -537,7 +545,13 @@
             if (!musicPlaying) {
                 toggleMusic();
             }
-            document.removeEventListener('click', initMusic);
+        }, { once: true });
+
+        // Also try to start on any keypress
+        document.addEventListener('keydown', function initMusicKey() {
+            if (!musicPlaying) {
+                toggleMusic();
+            }
         }, { once: true });
 
         // Initialize
