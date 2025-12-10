@@ -388,11 +388,9 @@
     </div>
 
     <!-- Background Music - Classic Horror Music -->
-    <audio id="bgMusic" loop preload="auto">
-        <!-- Bach's Toccata and Fugue in D Minor - iconic horror organ music -->
-        <source src="https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d7/HANDEL_-_Toccata_and_Fugue_in_D_minor.ogg/HANDEL_-_Toccata_and_Fugue_in_D_minor.ogg.mp3" type="audio/mpeg">
-        <!-- Backup source -->
-        <source src="https://ia802606.us.archive.org/35/items/Bach_Toccata_Fugue_d-moll/Bach_Toccata_Fugue_d-moll_64kb.mp3" type="audio/mpeg">
+    <audio id="bgMusic" loop preload="auto" crossorigin="anonymous">
+        <!-- Bach's Toccata and Fugue in D Minor - Direct Archive.org link -->
+        <source src="https://archive.org/download/JSBachToccataAndFugueInDMinorBwv565/JSBachToccataAndFugueInDMinorBWV565.mp3" type="audio/mpeg">
     </audio>
 
     <div class="game-container">
@@ -517,11 +515,12 @@
 
         // Music control
         let musicPlaying = false;
+        let musicInitialized = false;
         const bgMusic = document.getElementById('bgMusic');
         const musicToggle = document.getElementById('musicToggle');
 
         // Set volume to a comfortable level
-        bgMusic.volume = 0.25;
+        bgMusic.volume = 0.3;
 
         function toggleMusic() {
             if (musicPlaying) {
@@ -530,27 +529,52 @@
                 musicToggle.classList.remove('playing');
                 musicPlaying = false;
             } else {
-                bgMusic.play().then(() => {
-                    musicToggle.textContent = '🔊 Music';
-                    musicToggle.classList.add('playing');
-                    musicPlaying = true;
-                }).catch(e => {
-                    console.error('Audio play failed:', e);
-                    alert('Unable to play background music. Click the music button to try again.');
-                });
+                // Load the audio first if not loaded
+                if (!musicInitialized) {
+                    bgMusic.load();
+                    musicInitialized = true;
+                }
+
+                const playPromise = bgMusic.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        musicToggle.textContent = '🔊 Music';
+                        musicToggle.classList.add('playing');
+                        musicPlaying = true;
+                        console.log('Music started playing successfully');
+                    }).catch(e => {
+                        console.error('Audio play failed:', e);
+                        musicToggle.textContent = '❌ Click to Play Music';
+                        // Don't show alert on first auto-play attempt
+                    });
+                }
             }
         }
 
+        // Add error handling for audio loading
+        bgMusic.addEventListener('error', function(e) {
+            console.error('Audio loading error:', e);
+            musicToggle.textContent = '❌ Music Unavailable';
+        });
+
+        bgMusic.addEventListener('canplaythrough', function() {
+            console.log('Audio ready to play');
+        });
+
         // Auto-play music on first interaction
+        let interactionAttempted = false;
         document.addEventListener('click', function initMusic() {
-            if (!musicPlaying) {
+            if (!musicPlaying && !interactionAttempted) {
+                interactionAttempted = true;
                 toggleMusic();
             }
         }, { once: true });
 
         // Also try to start on any keypress
         document.addEventListener('keydown', function initMusicKey() {
-            if (!musicPlaying) {
+            if (!musicPlaying && !interactionAttempted) {
+                interactionAttempted = true;
                 toggleMusic();
             }
         }, { once: true });
