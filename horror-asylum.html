@@ -64,37 +64,6 @@
             gap: 30px;
         }
 
-        .character-panel {
-            width: 300px;
-            height: 300px;
-            background: rgba(20, 20, 30, 0.9);
-            border: 4px solid #8b0000;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 40px rgba(139, 0, 0, 0.6);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .character-panel img {
-            width: 80%;
-            height: 80%;
-            object-fit: contain;
-            filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.3));
-        }
-
-        .scared-effect {
-            animation: shake 0.5s infinite;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0) rotate(0deg); }
-            25% { transform: translateX(-5px) rotate(-2deg); }
-            75% { transform: translateX(5px) rotate(2deg); }
-        }
-
         .scene-title {
             font-family: 'Creepster', cursive;
             font-size: 3.5em;
@@ -448,7 +417,6 @@
                 title: "💀 THE MORGUE",
                 visual: "ui.morgue.svg",
                 description: "Cold metal tables. Your sister's necklace is here! You hear footsteps approaching...",
-                characterState: "scared",
                 choices: [
                     { icon: "🔍", text: "SEARCH FOR HER", hint: "Follow the clues deeper", next: "success" },
                     { icon: "💎", text: "TAKE NECKLACE & RUN", hint: "Grab it and escape now!", next: "fail" },
@@ -494,9 +462,6 @@
             let html = `
                 <h1 class="scene-title">${scene.title}</h1>
                 <div class="scene-visual">${visualHTML}</div>
-                <div class="character-panel">
-                    <img src="horrorcartoon.jpg" alt="Character" class="${scene.characterState === 'scared' ? 'scared-effect' : ''}">
-                </div>
                 <div class="scene-description">${scene.description}</div>
             `;
 
